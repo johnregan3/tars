@@ -3,11 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use GuzzleHttp\Client;
 use App\Models\Memory;
 use App\Models\Summary;
 use App\Http\Controllers\OpenAIAPIController as OpenAI;
-use Inertia\Inertia;
+use Illuminate\Support\Facades\Log;
 
 class MemoryController extends Controller
 {
@@ -21,10 +20,10 @@ class MemoryController extends Controller
 	 */
 	public static function generate_reply( $current_vector = []) {
 		$conversation = self::get_conversation();
-		$memories     = self::get_related_memories($current_vector, $conversation);
-		$notes        = self::create_summary($memories);
-		$conversation = self::get_last_messages($conversation, 4);
-		return self::write_new_memory($notes, $conversation);
+		$related      = self::get_related_memories($current_vector, $conversation);
+		$notes        = self::create_summary($related);
+		$recent       = self::get_last_messages($conversation, 4);
+		return self::write_new_memory($notes, $recent);
 	}
 
 	/**
@@ -98,6 +97,7 @@ class MemoryController extends Controller
 	 * @return string
 	 */
 	public static function create_summary($memories) {
+		$start_time = microtime(true);
 		usort($memories, function($a, $b) {
 			if ($a['created_at'] == $b['created_at']) {
 				return 0;
@@ -118,7 +118,7 @@ class MemoryController extends Controller
 		}
 
 		$input = trim($input);
-		$prompt = str_replace('<<INPUT>>', $input, self::summary_prompt_template());
+		$prompt = str_replace('<<INPUT>>', $input, self::summary_template());
 
 		// Create the Summary.
 		$summary = Summary::create([
@@ -132,7 +132,11 @@ class MemoryController extends Controller
 		}, $identifiers);
 
 		$summary->save();
+		$end_time = microtime(true);
 
+		if ( env('APP_DEBUG', false ) ) {
+			Log::info('Save Summary Text: ' . ($end_time - $start_time) . ' seconds ***' . $summary->text);
+		}
 		return $summary->text;
 	}
 
@@ -141,13 +145,13 @@ class MemoryController extends Controller
 	 * This is the response to the user's message.
 	 *
 	 * @param string $notes
-	 * @param string $conversation
+	 * @param array $array of recent Memory objects.
 	 */
-	public static function write_new_memory($notes, $conversation) {
-		$text  = str_replace( '<<NOTES>>', $notes, self::summary_response_template() );
-		$text  = str_replace( '<<CONVERSATION>>', $conversation, $text );
+	public static function write_new_memory($notes, $recent) {
+		$text  = str_replace( '<<NOTES>>', $notes, self::prompt_template() );
+		$text  = str_replace( '<<CONVERSATION>>', $recent, $text );
 		$memory = Memory::create([
-			'speaker_id' => env('CHAT_TARS_ID'),
+			'speaker_id' => env('CHAT_TARS_ID', 2),
 			'message' => OpenAI::gpt3_completion($text),
 			'vector' => OpenAI::gpt3_embedding($notes),
 		]);
@@ -184,18 +188,36 @@ class MemoryController extends Controller
 		return sqrt($sum);
 	}
 
-	public static function summary_prompt_template() {
-		return 'Write detailed notes of the following in a hyphenated list format like "- "\n\n<<INPUT>>\n\nNotes:';
+	public static function summary_template() {
+		ob_start();
+		?>
+		Write detailed notes of the following in a hyphenated list format like "- "
+
+		<<INPUT>>
+
+		Notes:
+		<?php
+		return ob_get_clean();
 	}
 
-	public static function summary_response_template() {
-		return 'I am a chatbot named TARS. My goals are to reduce suffering, increase prosperity, and increase understanding. I will read the conversation notes and recent messages, and then I will provide a long, verbose, detailed answer. I will then end my response with a follow-up or leading question.\n\n
-		The following are notes from earlier conversations with JOHN:\n
-		<<NOTES>>\n\n
-		The following are the most recent messages in the conversation:\n
-		<<CONVERSATION>>\n\n
-		I will now provide a long, detailed, verbose response, followed by a question:\n
-		TARS:';
+	public static function prompt_template() {
+		ob_start();
+		?>
+
+		I am a chatbot named TARS. My goals are to reduce suffering, increase prosperity, and increase understanding. I will read the conversation notes and recent messages, and then I will provide a long, verbose, detailed answer. I will then end my response with a follow-up or leading question.
+
+
+		The following are notes from earlier conversations with <?php echo env( 'CHAT_USER_NAME', 'USER' ); ?>:
+		<<NOTES>>
+
+		The following are the most recent messages in the conversation:
+		<<CONVERSATION>>
+
+		I will now provide a long, detailed, verbose response, followed by a question:
+		TARS:
+
+		<?php
+		return ob_get_clean();
 	}
 
 }

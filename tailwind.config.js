@@ -18,6 +18,9 @@ module.exports = {
             maxHeight: {
                 128: "32rem",
             },
+			rotate: {
+				30: "30deg",
+			}
         },
     },
 

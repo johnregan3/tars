@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Memory;
 use App\Models\Summary;
-use Inertia\Inertia;
 use OpenAI\Laravel\Facades\OpenAI;
+use Illuminate\Support\Facades\Log;
 
 class OpenAIAPIController extends Controller
 {
@@ -14,7 +14,7 @@ class OpenAIAPIController extends Controller
 	/**
 	 * Run an API Call.
 	 *
-	 * @param string $prompt A prompt to for the Reqeust.
+	 * @param string $prompt A prompt for the Reqeust.
 	 * @param string $engine The engine to use.
 	 * @param array  $args   An array of arguments to pass to the API.
 	 *
@@ -23,20 +23,26 @@ class OpenAIAPIController extends Controller
 	public static function gpt3_completion($prompt, $model = 'text-davinci-003', $args = [])
 	{
 
+		$start_time = microtime(true);
 		$default_args = [
-			'temperature'       => 0.0,
-			'max_tokens'        => 400,
-			'top_p'             => 1.0,
-			'frequency_penalty' => 0.0,
-			'presence_penalty'  => 0.0,
-			'stop'              => ['JOHN:', 'TARS:']
+			'temperature'       => 0.7,  // Randomness. 0 Makes it boring and repetitive.
+			'max_tokens'        => 300,  // 100 is the max tokens allowed.
+			'top_p'             => 0.75,  // A seive to remove low probability tokens.
+			'frequency_penalty' => 0.5, // Penalize new words based on their existing frequency.
+			'presence_penalty'  => 0.75,  // Likelihood of using new topics.
+			'stop'              => [ env('CHAT_USER_NAME', 'USER' ) . ':', 'TARS:']
 		];
-		$args = array_merge($default_args, $args);
+		$args           = array_merge($default_args, $args);
 		$args['prompt'] = $prompt;
-		$args['model'] = $model;
+		$args['model']  = $model;
+		$result         = OpenAI::completions()->create($args);
+		$end_time       = microtime(true);
 
-		$result = OpenAI::completions()->create($args);
-		return $result['choices'][0]['text'];
+		$text = $result['choices'][0]['text'];
+		if ( env('APP_DEBUG', false ) ) {
+			Log::info('Completion Execution Time: ' . ($end_time - $start_time) . ' seconds ***' . substr( $prompt, 0, 100 ));
+		}
+		return $text;
 
 		/*
 
@@ -87,11 +93,35 @@ class OpenAIAPIController extends Controller
 	 */
 	public static function gpt3_embedding($content, $engine = 'text-embedding-ada-002')
 	{
-		$result = OpenAI::embeddings()->create([
-			'model' => $engine,
-			'input' => $content,
-		]);
+		$start_time  = microtime(true);
+		$max_retries = 5;
+		$retry       = 0;
+		while( $retry <= $max_retries ) {
+			try {
+				$result = OpenAI::embeddings()->create([
+					'model' => $engine,
+					'input' => $content,
+				]);
+				$end_time = microtime(true);
+				if ( env('APP_DEBUG', false ) ) {
+					Log::info('Completion Execution Time: ' . ($end_time - $start_time) . ' seconds ***' . substr( $content, 0, 100 ));
+				}
+				return json_encode($result->embeddings[0]->embedding);
+			} catch (\Exception $e) {
+				$retry++;
+				if ($retry > $max_retries) {
+					return "GPT3 error: " . $e->getMessage();
+				}
+				Log::info('Error communicating with OpenAI: ' . $e->getMessage());
+				sleep(1);
+			}
+		}
 
-		return json_encode($result->embeddings[0]->embedding);
+		$end_time = microtime(true);
+		if ( env('APP_DEBUG', false ) ) {
+			Log::info('Completion ERROR Execution Time: ' . ($end_time - $start_time) . ' seconds ***' . substr( $content, 0, 100 ));
+		}
+
+		return json_encode([]);
 	}
 }

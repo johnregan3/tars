@@ -16,22 +16,34 @@ import NavMain from "@/Components/Spotlight/NavMain.vue";
           <div class="relative px-4 sm:px-8 lg:px-12">
             <div class="mx-auto max-w-2xl lg:max-w-5xl">
               <div class="relative flex gap-4">
-                <div class="flex flex-1">
+                <div class="group flex flex-1 items-center">
                   <div
-                    class="h-10 w-10 rounded-full bg-white/90 p-0.5 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur dark:bg-zinc-800/90 dark:ring-white/10"
+                    class="flex items-center justify-between h-10 w-10 p-0.5 shadow-lg shadow-zinc-800/5 ring-none backdrop-blur group-hover:ring-2 group-hover:ring-teal-400 rounded-full transition duration-500 ease-in-out"
                   >
-                    <Link aria-label="Home" class="pointer-events-auto" :href="route('home')"><img
-                        src="/img/apoplexik-sq.jpg"
-                        class="rounded-full bg-zinc-100 object-cover dark:bg-zinc-800 h-9 w-9"
+                    <Link
+                      aria-label="Home"
+                      class="pointer-events-auto text-white"
+                      :href="route('home')"
+                    >
+                      <img
+                        src="/img/icon-tars.svg"
+                        class="rounded rounded-full border-2 border-transparent bg-slate-300 group-hover:bg-zinc-300 transition duration-500 ease-in-out"
                         style="color: transparent"
                         width="512"
                         height="512"
-                    /></Link>
+                      />
+                    </Link>
                   </div>
+                  <Link
+                    aria-label="Home"
+                    class="pointer-events-auto text-white font-bold text-2xl ml-2"
+                    :href="route('home')"
+                    >TARS</Link
+                  >
                 </div>
                 <div class="flex flex-1 justify-end text-white">
-					<NavMain />
-				</div>
+                  <NavMain />
+                </div>
                 <!-- <div class="flex justify-end md:flex-1 text-white">Button</div> -->
               </div>
             </div>

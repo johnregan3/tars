@@ -7,6 +7,8 @@ use App\Models\Memory;
 use App\Models\User;
 use App\Http\Controllers\MemoryController;
 use App\Http\Controllers\OpenAIAPIController as OpenAI;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class ChatController extends Controller
@@ -19,6 +21,7 @@ class ChatController extends Controller
 			function ($memory) {
 				$memory['speaker'] = User::find($memory->speaker_id)->name;
 				$memory['date'] = $this->human_readable_date($memory->created_at, true);
+				$memory['content'] = Str::of($memory->message)->markdown();
 				return $memory;
 			}
 		)->toArray();
@@ -33,11 +36,15 @@ class ChatController extends Controller
 			'message' => 'required',
 		]);
 
+		if (env('APP_DEBUG', false)) {
+			Log::info('====== START PROMPT/RESPONSE ======');
+		}
+
 		// Create the Memory.
 		$memory = Memory::create([
 			'speaker_id' => env('CHAT_USER_ID'),
-			'message' => $request->input('message'),
-			'vector' => OpenAI::gpt3_embedding($request->input('message')),
+			'message'    => $request->input('message'),
+			'vector'     => OpenAI::gpt3_embedding($request->input('message')),
 		]);
 
 		MemoryController::generate_reply($memory->vector);
@@ -67,7 +74,7 @@ class ChatController extends Controller
 				unset($string[$k]);
 			}
 		}
-		if (! $full ) $string = array_slice($string, 0, 1);
+		if (!$full) $string = array_slice($string, 0, 1);
 		return $string ? implode(', ', $string) . ' ago' : 'just now';
 	}
 }

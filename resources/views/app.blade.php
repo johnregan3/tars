@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-		<link rel="shortcut icon" href="{{ asset('favicon.png') }}">
+		<link rel="shortcut icon" href="{{ asset('favicon-tars.png') }}">
 
         <title inertia>{{ config('app.name', 'TARS') }}</title>
 
@@ -13,8 +13,7 @@
 
         <!-- Scripts -->
         @routes
-        @vite(['resources/js/app.js', "resources/js/Pages/{$page['component']}.vue"])
-		@vite(['resources/sass/app.scss'])
+        @vite(['resources/js/app.js', "resources/sass/app.scss", "resources/js/Pages/{$page['component']}.vue"])
         @inertiaHead
     </head>
     <body class="font-sans antialiased flex h-full flex-col">
