@@ -4,8 +4,55 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9a657fd57280ec7dbb724a224dd3d68b",
+    "content-hash": "a7392a14e272fa5508ad468eda165480",
     "packages": [
+        {
+            "name": "ankane/pgvector",
+            "version": "v0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pgvector/pgvector-php.git",
+                "reference": "2adf97d7d5a87530a08dde485ad792f1601dbd61"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pgvector/pgvector-php/zipball/2adf97d7d5a87530a08dde485ad792f1601dbd61",
+                "reference": "2adf97d7d5a87530a08dde485ad792f1601dbd61",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">= 7.4"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Pgvector\\Laravel\\PgvectorServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Pgvector\\Laravel\\": "src/laravel"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Andrew Kane",
+                    "email": "andrew@ankane.org"
+                }
+            ],
+            "description": "pgvector support for PHP",
+            "support": {
+                "issues": "https://github.com/pgvector/pgvector-php/issues",
+                "source": "https://github.com/pgvector/pgvector-php"
+            },
+            "time": "2022-08-05T19:49:37+00:00"
+        },
         {
             "name": "bacon/bacon-qr-code",
             "version": "2.0.8",

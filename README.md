@@ -2,6 +2,11 @@
 
 GPT-3 chatbot Lavavel APp with long-term memory and external sources.
 
+
+## Pre-Setup Notes
+- This requires using a PostgreSQL (as opposed to MySQL) database. [[setup](https://www.codementor.io/@engineerapart/getting-started-with-postgresql-on-mac-osx-are8jcopb)]. I used Homebrew to install postgreSQL: `brew install postgresql`
+- Install the pgvector Extension `brew install pgvector/brew/pgvector`
+
 ## Installation
 1. clone the repo.
 2. run `composer install`
