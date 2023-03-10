@@ -81,7 +81,7 @@ DB_PASSWORD=
 
 CACHE_DRIVER=redis
 ```
-*Note that "USER" can be replaced with your first name, and you can call "TARS" whatever the heck you want: HAL, Ava, Shakira, it doesn't matter.*
+*Note that "Cooper" can be replaced with your name, and you can call "TARS" whatever the heck you want: HAL, Ava, Shakira, it doesn't matter.*
 
 6. `php artisan migrate:fresh --seed` sets up database and cretates users based on the `.env` file.
 
