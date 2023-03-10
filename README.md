@@ -1,6 +1,8 @@
 # TARS
 
-GPT-3 chatbot Lavavel App with short and near-term memory.
+A GPT-3 chatbot Lavavel App with short and near-term memory.
+
+![tars-github-2](https://user-images.githubusercontent.com/2053940/224233487-3e2e4c17-670e-4cb8-9561-929d1fa7b76e.jpg)
 
 ## Overview
 
@@ -18,8 +20,6 @@ This is an attempt to recreate Dave Shapiro's [LongtermChatExternalSources](http
 Using a DB instead of text files means the bot takes up significantly less disk space, and information is processed faster.
 
 My very first iteration used a MySQL database and used PHP to handle the cosine similarity between entries, but it took quite a long time for (~20 sec) for the bot to provide a response to any prompt.  I changed to using a PostgreSQL database so that the cosine similarity can be caclulated in the DB instead of the code, and this reduced response times down to as low as 3 seconds if Open AI's API responded quickly.
-
-
 
 
 ## Pre-Setup Notes
@@ -54,6 +54,7 @@ DB_PASSWORD=
 6. `php artisan migrate:fresh --seed` sets up database and cretates users based on our config.
 7. `npm run build` runs Vite and builds the files
 8. `npm run dev` polls the code for updates
+9. visit yourLocalWebServer.test/chat/ to start chatting with TARS
 
 ## Credits
 
