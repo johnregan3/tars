@@ -8,7 +8,7 @@ GPT-3 chatbot Lavavel App with short and near-term memory.
 
 This is an attempt to recreate [Dave Shapiro](https://www.patreon.com/daveshap)'s [LongtermChatExternalSources](https://github.com/daveshap/LongtermChatExternalSources), replacing storing data in text files with a database.
 
-To his credit, Shaprio's project was an experiment and was never intended to scale. When I tried out his code, I wanted to play with the chatbot longer to see what it was capable of, but was shocked at how quickly the data ammassed on my hard drive.  This is what inspired me to try to put all of it into a database.
+To his credit, Shaprio's project was an experiment and was never intended to scale. When I tried out his code, I wanted to play with the chatbot longer to see what it was capable of, but was shocked at how quickly the data amassed on my hard drive.  This is what inspired me to try to put all of it into a database.
 
 This app is designed to be run on your local webserver (like [Laravel valet](https://laravel.com/docs/10.x/valet)). Once you have it up and running, start chatting with TARS. It takes a bit of interaction for it to gather enough data to give good responses, but I was able to have some interesting conversations with TARS, covering topics ranging from my personal goals, fried chicken recipes, ceiling fans in cars, and what I enjoy most about the people I love.
 
