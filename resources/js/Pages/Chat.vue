@@ -14,10 +14,22 @@ let form = useForm({
 });
 
 const messagesList = ref(null);
+const messageBlock = ref(null);
 
 onMounted(() => {
   messagesList.value.scrollTop = messagesList.value.scrollHeight;
+  focusMessageBlock();
 });
+
+let focusMessageBlock = () => {
+  messageBlock.value.focus();
+};
+
+let scrollToBottom = () => {
+  messagesList.value.scrollTop = messagesList.value.scrollHeight;
+  window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+  focusMessageBlock();
+};
 
 let sendMessage = () => {
   form.post(route("chat.store"), {
@@ -25,15 +37,12 @@ let sendMessage = () => {
     onSuccess: () => {
       router.reload({ preserveState: true });
       form.reset();
-      messagesList.value.scrollTop = messagesList.value.scrollHeight;
+      scrollToBottom();
     },
   });
 };
 
-let scrollToBottom = () => {
-  messagesList.value.scrollTop = messagesList.value.scrollHeight;
-  window.scrollTo({ top:document.body.scrollHeight, behavior: 'smooth' });
-};
+
 </script>
 
 <template>
@@ -56,20 +65,22 @@ let scrollToBottom = () => {
                       v-for="memory in data.memories"
                       :key="memory.id"
                       :class="[
-                        'TARS' == memory.speaker ? 'bg-slate-700/75 border-gray-800/75 ' : 'bg-slate-800/75 border-gray-700 ',
-                        'chat_list__item mb-4 p-4 border rounded-md inline-block',
+                        '2' == memory.speaker.id
+                          ? 'bg-slate-700/75 border-gray-800/75 '
+                          : 'bg-slate-800/75 border-gray-700 ',
+                        'chat_list__item mb-4 p-4 border rounded-md',
                       ]"
                     >
                       <div class="flex pr-4">
                         <img
                           :class="[
-                            'TARS' == memory.speaker
+                            '2' == memory.speaker.id
                               ? 'bg-slate-200/60'
                               : 'bg-zinc-200/60',
                             'h-10 w-10 rounded-full mr-3 bg-cover',
                           ]"
                           :src="
-                            'TARS' == memory.speaker
+                            '2' == memory.speaker.id
                               ? '/img/tars.webp'
                               : '/img/cooper.webp'
                           "
@@ -78,10 +89,13 @@ let scrollToBottom = () => {
                         <div class="flex-1">
                           <div class="flex items-center justify-between mb-2">
                             <h4 class="text-md font-bold text-white mt-2">
-                              {{ memory.speaker }}
+                              {{ memory.speaker.name }}
                             </h4>
                           </div>
-                          <div v-html="memory.content" class="mb-2 text-slate-200"></div>
+                          <div
+                            v-html="memory.message"
+                            class="mb-2 text-slate-200"
+                          ></div>
                           <p class="text-sm text-gray-500">{{ memory.date }}</p>
                         </div>
                       </div>
@@ -110,6 +124,7 @@ let scrollToBottom = () => {
                           </div>
                         </div>
                         <Textarea
+                          ref="messageBlock"
                           v-model="form.message"
                           :disabled="form.processing"
                           class="block"
@@ -133,8 +148,12 @@ let scrollToBottom = () => {
       </div>
     </div>
     <div class="sticky w-full flex justify-end bottom-0 pb-3 pr-5 transition">
-      <div class="w-8 h-8 rounded-full bg-slate-300/50 hover:bg-slate-300/75 transition duration-300">
-        <button @click="scrollToBottom" class="w-8 h-8 color-slate-700">&DownArrowBar;</button>
+      <div
+        class="w-8 h-8 rounded-full bg-slate-300/50 hover:bg-slate-300/75 transition duration-300"
+      >
+        <button @click="scrollToBottom" class="w-8 h-8 color-slate-700">
+          &DownArrowBar;
+        </button>
       </div>
     </div>
   </Spotlight>

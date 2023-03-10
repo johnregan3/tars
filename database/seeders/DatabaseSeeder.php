@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
 		]);
 
 		User::create([
-			'name'     => 'TARS',
+			'name'     => env('CHAT_TARS_NAME', 'TARS'),
 			'email'    => 'tars@local.test',
 			'password' => bcrypt('password'),
 		]);

@@ -19,9 +19,9 @@ class ChatController extends Controller
 		$data = [];
 		$data['memories'] = Memory::all()->map(
 			function ($memory) {
-				$memory['speaker'] = User::find($memory->speaker_id)->name;
-				$memory['date'] = $this->human_readable_date($memory->created_at, true);
-				$memory['content'] = Str::of($memory->message)->markdown();
+				$memory['speaker'] = $memory->speaker;
+				$memory['date'] = $this->humanReadableDate($memory->created_at, true);
+				$memory['message'] = Str::of($memory->content)->markdown();
 				return $memory;
 			}
 		)->toArray();
@@ -37,21 +37,28 @@ class ChatController extends Controller
 		]);
 
 		if (env('APP_DEBUG', false)) {
+			$start_time = microtime(true);
 			Log::info('====== START PROMPT/RESPONSE ======');
 		}
 
 		// Create the Memory.
 		$memory = Memory::create([
-			'speaker_id' => env('CHAT_USER_ID'),
-			'message'    => $request->input('message'),
-			'vector'     => OpenAI::gpt3_embedding($request->input('message')),
+			'speaker_id' => env('CHAT_USER_ID', 1),
+			'content'    => $request->input('message'),
+			'embedding'  => OpenAI::gpt3Embedding($request->input('message')),
 		]);
 
-		MemoryController::generate_reply($memory->vector);
+		MemoryController::generateReply($memory);
+
+		if (env('APP_DEBUG', false)) {
+			$end_time = microtime(true);
+			Log::info('====== chat.store() : ' . round($end_time - $start_time, 2) . ' seconds ======');
+		}
+
 		return to_route('chat.index');
 	}
 
-	public function human_readable_date($date, $full = false)
+	public function humanReadableDate($date, $full = false)
 	{
 		$now = new \DateTime();
 		$ago = new \DateTime($date);

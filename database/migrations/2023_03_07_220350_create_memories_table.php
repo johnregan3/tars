@@ -17,8 +17,8 @@ return new class extends Migration
             $table->id();
 			$table->unsignedBigInteger('speaker_id');
             $table->foreign('speaker_id')->references('id')->on('users');
-			$table->longText('message');
-            $table->json('vector');
+			$table->longText('content');
+            $table->vector('embedding');
             $table->timestamps();
         });
     }

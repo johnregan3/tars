@@ -10,7 +10,7 @@ class Summary extends Model
 {
     use HasFactory;
 
-	protected $fillable = [ 'text', 'timestamps', 'vector' ];
+	protected $fillable = [ 'content', 'embedding' ];
 
 	public function memories()
     {
