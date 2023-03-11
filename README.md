@@ -1,6 +1,6 @@
 # TARS
 
-GPT-3 chatbot Lavavel App with short and near-term memory.
+GPT-3 chatbot Lavavel App with Long Term Memory.
 
 ![tars-github-2](https://user-images.githubusercontent.com/2053940/224233487-3e2e4c17-670e-4cb8-9561-929d1fa7b76e.jpg)
 
