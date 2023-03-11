@@ -11,13 +11,12 @@ class OpenAIAPIController extends Controller
 	/**
 	 * Run an API Call.
 	 *
-	 * @param string $prompt A prompt for the Reqeust.
-	 * @param string $model  Optional. The model to use. Defaults to text-davinci-003.
-	 * @param array  $args   Optional. An array of arguments to pass to the API.
+	 * @param array  $messages Messages to pass to the API.
+	 * @param array  $args     Optional. An array of arguments to pass to the API.
 	 *
 	 * @return string The text response from the API.
 	 */
-	public static function gpt3Completion($prompt, $model = 'text-davinci-003', $args = [])
+	public static function gpt3Completion($prompt, $args = [])
 	{
 		if ( env('APP_DEBUG', false ) ) {
 			$start_time = microtime(true);
@@ -29,17 +28,28 @@ class OpenAIAPIController extends Controller
 			'top_p'             => 0.75, // A seive to remove low probability tokens.
 			'frequency_penalty' => 0.5,  // Penalize new words based on their existing frequency.
 			'presence_penalty'  => 0.75, // Likelihood of using new topics.
-			'stop'              => [ env('CHAT_USER_NAME', 'USER' ) . ':', env('CHAT_TARS_NAME', 'TARS' ) . ':']
+			'stop'              => [ env('CHAT_USER_NAME', 'USER' ) . ':', env('CHAT_TARS_NAME', 'TARS' ) . ':'],
 		];
 		$args           = array_merge($default_args, $args);
-		$args['prompt'] = $prompt;
-		$args['model']  = $model;
-		$result         = OpenAI::completions()->create($args);
-		$text = $result['choices'][0]['text'];
+		$args['model']  = 'gpt-3.5-turbo';
+		$args['messages'] = [
+			[
+				'role' => 'system',
+				'content' => 'You a chatbot named ' . env('CHAT_TARS_NAME', 'TARS') . '. Your goals are to reduce suffering, increase prosperity, and increase understanding. You will provide a long, verbose, detailed answer. You will then end your response with a follow-up or leading question.'
+			],
+			[
+				'role' => 'user',
+				'content' => $prompt,
+			],
+		];
+
+		$response = OpenAI::completions()->create($args);
+		$text = $response['choices'][0]['content'];
 
 		if ( env('APP_DEBUG', false ) ) {
 			$end_time = microtime(true);
 			Log::info('Completion Execution Time: ' . round($end_time - $start_time, 2) . ' seconds ***');
+			Log::info( $response );
 		}
 		return $text;
 	}

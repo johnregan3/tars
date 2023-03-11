@@ -4,6 +4,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\OpenAIAPIController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,6 +34,10 @@ Route::middleware([
     Route::get('/dashboard', function () {
         return Inertia::render('Dashboard');
     })->name('dashboard');
+});
+
+Route::get('/test', function() {
+	return OpenAIAPIController::gpt3Chat('This is a test.');
 });
 
 Route::resource('chat', ChatController::class);
