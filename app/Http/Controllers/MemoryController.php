@@ -56,6 +56,11 @@ class MemoryController extends Controller
 
 		$completion = OpenAI::gpt3Completion($prompt);
 
+		if (empty($completion)) {
+			Log::info('MemoryController::createAIMemory() : empty completion');
+			return;
+		}
+
 		Memory::create([
 			'speaker_id' => env('CHAT_TARS_ID', 2),
 			'content'    => $completion,
@@ -76,13 +81,13 @@ class MemoryController extends Controller
 		$memories = Memory::latest()->take(4)->get()->reverse()->toArray();
 
 		$output = array_map(function ($memory) {
-			return strtoupper(User::find($memory['speaker_id'])->name) . ': ' . Utils::normalizedDate($memory['created_at']) . ' - ' . $memory['content'];
+			return strtoupper(User::find($memory['speaker_id'])->name) . ': ' . $memory['content'];
 		}, $memories);
 
 		$output = implode( PHP_EOL . PHP_EOL, $output);
 
 		if ( empty( $output ) ) {
-			$output = strtoupper(User::find($this->memory['speaker_id'])->name) . ': ' . Utils::normalizedDate($this->memory['created_at']) . ' - This is the start of our conversation.' . PHP_EOL . PHP_EOL;
+			$output = strtoupper(User::find($this->memory['speaker_id'])->name) . ': This is the start of our conversation.' . PHP_EOL . PHP_EOL;
 		}
 
 		return $output;
@@ -102,7 +107,7 @@ class MemoryController extends Controller
 		$memories = $this->memory->relatedMemories()->toArray();
 
 		$relatedConversation = array_map(function ($memory) {
-			return User::find($memory['speaker_id'])->name . ': ' . Utils::normalizedDate($memory['created_at']) . ' - ' . $memory['content'];
+			return User::find($memory['speaker_id'])->name . ': ' . $memory['content'];
 		}, $memories);
 
 		$relatedConversation = implode(PHP_EOL . PHP_EOL, $relatedConversation);

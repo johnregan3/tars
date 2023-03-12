@@ -86,7 +86,7 @@ class OpenAIAPIController extends Controller
 				sleep(1);
 			}
 		}
-
+		Log::info('TARS Error with Completion: too many retries');
 		// Returns an empty string instead of storing error text in the DB.
 		return '';
 	}
@@ -119,7 +119,7 @@ class OpenAIAPIController extends Controller
 				sleep(1);
 			}
 		}
-
+		Log::info('TARS Error with Embedding: too many retries');
 		return json_encode([]);
 	}
 }

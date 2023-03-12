@@ -32,6 +32,5 @@ Route::middleware([
     Route::get('/dashboard', function () {
         return Inertia::render('Dashboard');
     })->name('dashboard');
+	Route::resource('chat', ChatController::class);
 });
-
-Route::resource('chat', ChatController::class);
