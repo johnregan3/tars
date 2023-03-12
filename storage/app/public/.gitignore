@@ -1,2 +1,4 @@
 *
 !.gitignore
+!python-scripts/
+!python-scripts/*

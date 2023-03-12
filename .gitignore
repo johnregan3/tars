@@ -8,7 +8,6 @@
 .env.backup
 .env.production
 .phpunit.result.cache
-!.nvmrc
 Homestead.json
 Homestead.yaml
 auth.json
@@ -17,3 +16,5 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+!.nvmrc
+
