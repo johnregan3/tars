@@ -8,8 +8,8 @@ body {
 		padding: 20px;
 		margin: 20px 0;
 		background: rgba(24, 24, 27, 0.55);
-		border-radius: .375rem;
-		border: 1px solid rgba(255,255,255, 0.15);
+		border-radius: 0.375rem;
+		border: 1px solid rgba(255, 255, 255, 0.15);
 
 		code[class*="language-"] {
 			font-size: 13px;
@@ -17,8 +17,17 @@ body {
 		}
 	}
 
+	code {
+		background: rgba(24, 24, 27, 0.55);
+		padding: 4px 5px;
+		border-radius: 0.25rem;
+		font-size: 13px;
+		color: #ddd;
+	}
+
 	.chat_list {
-		&__item { // Inside of chat items.
+		&__item {
+			// Inside of chat items.
 
 			&:last-child {
 				margin-bottom: 0;

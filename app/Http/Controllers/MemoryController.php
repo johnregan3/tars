@@ -2,36 +2,41 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Memory;
 use App\Models\Summary;
 use App\Models\User;
 use App\Http\Controllers\OpenAIAPIController as OpenAI;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\DB;
+use App\Helpers\Utils;
 
 class MemoryController extends Controller
 {
 
 	/**
-	 * Create a summary and compose the reply to the user.
+	 * The incoming Memory object.
 	 *
-	 * @param int $memory_id A Memory ID.
-	 *
-	 * @return string
+	 * @var Memory
 	 */
-	public static function generateReply($memory)
+	private $memory = null;
+
+	/**
+	 * A string of the recent conversation.
+	 *
+	 * @var string
+	 */
+	private $conversation = '';
+
+	/**
+	 * Create a new controller instance.
+	 *
+	 * @param Memory $memory A Memory object.
+	 *
+	 * @return void
+	 */
+	public function __construct($memory)
 	{
-		if (env('APP_DEBUG', false)) {
-			$start_time = microtime(true);
-		}
-
-		self::createAIMemory($memory);
-
-		if (env('APP_DEBUG', false)) {
-			$end_time = microtime(true);
-			//Log::info('generate_reply() : ' . round($end_time - $start_time, 2) . ' seconds');
-		}
+		$this->memory = $memory;
+		$this->conversation = $this->getConversation();
 	}
 
 	/**
@@ -43,12 +48,11 @@ class MemoryController extends Controller
 	 *
 	 * @return void
 	 */
-	public static function createAIMemory($memory)
+	public function createAIMemory()
 	{
 		// Load the related summary and recent memories into the prompt.
-		$summary    = self::createSummary($memory);
-		$recent     = self::getRecentMemoriesText();
-		$prompt     = sprintf(self::promptTemplate(), $summary, $recent);
+		$summary    = self::createSummary();
+		$prompt     = sprintf(self::promptTemplate(), $summary, $this->conversation);
 
 		$completion = OpenAI::gpt3Completion($prompt);
 
@@ -60,47 +64,67 @@ class MemoryController extends Controller
 		return;
 	}
 
-	public static function getRecentMemoriesText()
+	/**
+	 * Get the recent conversation, as a string.
+	 *
+	 * Used for filling in Salience and Anticipation templates.
+	 *
+	 * @return string
+	 */
+	protected function getConversation()
 	{
-		$memories = Memory::latest()->take(4)->orderBy('created_at', 'desc')->get()->reverse();
+		$memories = Memory::latest()->take(4)->get()->reverse()->toArray();
 
-		$output = '';
-		foreach ($memories as $memory) {
-			$output .= $memory->speaker->name . ': ' . $memory->content . "\n\n";
+		$output = array_map(function ($memory) {
+			return strtoupper(User::find($memory['speaker_id'])->name) . ': ' . Utils::normalizedDate($memory['created_at']) . ' - ' . $memory['content'];
+		}, $memories);
+
+		$output = implode( PHP_EOL . PHP_EOL, $output);
+
+		if ( empty( $output ) ) {
+			$output = strtoupper(User::find($this->memory['speaker_id'])->name) . ': ' . Utils::normalizedDate($this->memory['created_at']) . ' - This is the start of our conversation.' . PHP_EOL . PHP_EOL;
 		}
 
-		return empty($output) ? 'No recent memories found yet. Go make some by chatting with me.' : $output;
+		return $output;
 	}
 
 	/**
-	 * Summarize a block of memories.
+	 * Summarize a block of memories and Save.
 	 *
-	 * @param Memory $memory A Memory object.
+	 * This will be used by TARS to quickly locate
+	 * a relevant summary of a topic and its related memories.
 	 *
 	 * @return string The summary content.
 	 */
-	public static function createSummary($memory)
+	protected function createSummary()
 	{
-		$memories = $memory->relatedMemories();
+		// Get the *related* memories, not recent ones.
+		$memories = $this->memory->relatedMemories()->toArray();
 
-		$input = '';
-		foreach ($memories as $memory) {
-			$input .= $memory->speaker->name . ': datetime=' . $memory->created_at . ' : ' . $memory->content . "\n\n";
-		}
-		$input      = empty($input) ? 'Our conversation has not gone on long enough to summarize. Keep on chatting!' : trim($input);
-		$prompt     = sprintf(self::summaryTemplate(), $input);
+		$relatedConversation = array_map(function ($memory) {
+			return User::find($memory['speaker_id'])->name . ': ' . Utils::normalizedDate($memory['created_at']) . ' - ' . $memory['content'];
+		}, $memories);
+
+		$relatedConversation = implode(PHP_EOL . PHP_EOL, $relatedConversation);
+		$relatedConversation = empty($relatedConversation) ? 'Our conversation has not gone on long enough to summarize. Keep on chatting!' : trim($relatedConversation);
+
+		$prompt = sprintf(self::summaryTemplate(), $relatedConversation);
 
 		$completion = OpenAI::gpt3Completion($prompt);
-		$summary    = Summary::create([
-			'content'   => $completion,
-			'embedding' => OpenAI::gpt3Embedding($completion),
+
+		if (empty($completion)) {
+			Log::info('MemoryController::createSummary() : empty completion');
+			return;
+		}
+
+		$summary = Summary::create([
+			'content' => $completion,
 		]);
 
-		$memories->map(function ($memory) use ($summary) {
-			$summary->memories()->attach($memory->id);
-		});
-
-		$summary->save();
+		// Attach the related memories to the summary.
+		array_map(function ($memory) use ($summary) {
+			$summary->memories()->attach($memory['id']);
+		}, $memories);
 
 		return $summary->content;
 	}

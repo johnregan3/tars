@@ -21,8 +21,6 @@ Route::get('/', function () {
     return Inertia::render('Home', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
     ]);
 })->name('home');
 
@@ -34,10 +32,6 @@ Route::middleware([
     Route::get('/dashboard', function () {
         return Inertia::render('Dashboard');
     })->name('dashboard');
-});
-
-Route::get('/test', function() {
-	return OpenAIAPIController::gpt3Chat('This is a test.');
 });
 
 Route::resource('chat', ChatController::class);
