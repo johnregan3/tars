@@ -4,9 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Memory;
-use App\Models\User;
+use App\Helpers\Utils;
 use App\Http\Controllers\MemoryController;
-use App\Http\Controllers\OpenAIAPIController as OpenAI;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -14,13 +13,18 @@ use Inertia\Inertia;
 class ChatController extends Controller
 {
 
+	/**
+	 * Run the Index view.
+	 *
+	 * @return void
+	 */
 	public function index()
 	{
 		$data = [];
 		$data['memories'] = Memory::all()->map(
 			function ($memory) {
 				$memory['speaker'] = $memory->speaker;
-				$memory['date'] = $this->humanReadableDate($memory->created_at, true);
+				$memory['date'] = Utils::humanReadableDate($memory->created_at, true);
 				$memory['message'] = Str::of($memory->content)->markdown();
 				return $memory;
 			}
@@ -28,27 +32,34 @@ class ChatController extends Controller
 		return Inertia::render('Chat', ['data' => $data]);
 	}
 
+	/**
+	 * Store a new Memory.
+	 *
+	 * @param Request $request The incoming request.
+	 *
+	 * @return void
+	 */
 	public function store(Request $request)
 	{
 
-		// Preform some validation.
 		$request->validate([
-			'message' => 'required',
+			'message' => 'required|string|max:500',
 		]);
+
+		$input_string = htmlspecialchars($request->input('message'));
 
 		if (env('APP_DEBUG', false)) {
 			$start_time = microtime(true);
-			Log::info('====== START PROMPT/RESPONSE ======');
 		}
 
 		// Create the Memory.
 		$memory = Memory::create([
 			'speaker_id' => env('CHAT_USER_ID', 1),
-			'content'    => $request->input('message'),
-			'embedding'  => OpenAI::gpt3Embedding($request->input('message')),
+			'content'    => $input_string,
 		]);
 
-		MemoryController::generateReply($memory);
+		$newMemory = new MemoryController($memory);
+		$newMemory->createAIMemory();
 
 		if (env('APP_DEBUG', false)) {
 			$end_time = microtime(true);
@@ -56,32 +67,5 @@ class ChatController extends Controller
 		}
 
 		return to_route('chat.index');
-	}
-
-	public function humanReadableDate($date, $full = false)
-	{
-		$now = new \DateTime();
-		$ago = new \DateTime($date);
-		$diff = $now->diff($ago);
-		$diff->w = floor($diff->d / 7);
-		$diff->d -= $diff->w * 7;
-		$string = array(
-			'y' => 'year',
-			'm' => 'month',
-			'w' => 'week',
-			'd' => 'day',
-			'h' => 'hour',
-			'i' => 'minute',
-			's' => 'second',
-		);
-		foreach ($string as $k => &$v) {
-			if ($diff->$k) {
-				$v = $diff->$k . ' ' . $v . ($diff->$k > 1 ? 's' : '');
-			} else {
-				unset($string[$k]);
-			}
-		}
-		if (!$full) $string = array_slice($string, 0, 1);
-		return $string ? implode(', ', $string) . ' ago' : 'just now';
 	}
 }

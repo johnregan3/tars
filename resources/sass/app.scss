@@ -17,6 +17,14 @@ body {
 		}
 	}
 
+	code {
+		background: rgba(24, 24, 27, 0.55);
+		padding: 4px 5px;
+		border-radius: .25rem;
+		font-size: 13px;
+		color: #ddd;
+	}
+
 	.chat_list {
 		&__item { // Inside of chat items.
 

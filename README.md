@@ -1,6 +1,6 @@
 # TARS
 
-GPT-3 chatbot with long term memory, as a Laravel App 
+GPT-3 chatbot with long term memory, as a Laravel App
 
 ![tars-github-2](https://user-images.githubusercontent.com/2053940/224233487-3e2e4c17-670e-4cb8-9561-929d1fa7b76e.jpg)
 
@@ -82,6 +82,8 @@ DB_PASSWORD=
 CACHE_DRIVER=redis
 ```
 *Note that "Cooper" can be replaced with your name, and you can call "TARS" whatever the heck you want: HAL, Ava, Shakira, it doesn't matter.*
+
+6. You may need to run `php artisan vendor:publish --provider="OpenAI\Laravel\ServiceProvider"`
 
 6. `php artisan migrate:fresh --seed` sets up database and cretates users based on the `.env` file.
 

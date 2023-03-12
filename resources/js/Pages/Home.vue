@@ -1,12 +1,11 @@
 <script setup>
 import { Link } from "@inertiajs/vue3";
 import Spotlight from "@/Layouts/Spotlight.vue";
+import ButtonLinkPrimary from "@/Components/Spotlight/ButtonLinkPrimary.vue";
 
 defineProps({
   canLogin: Boolean,
   canRegister: Boolean,
-  laravelVersion: String,
-  phpVersion: String,
 });
 </script>
 
@@ -29,7 +28,9 @@ defineProps({
                   <div
                     class="mt-6 space-y-7 text-base text-zinc-600 dark:text-zinc-400"
                   >
-                    <p>Content</p>
+                    <ButtonLinkPrimary :href="route('chat.index')" class="btn btn-primary">
+					  Chat with Tars <font-awesome-icon icon="fa-solid fa-arrow-right-long" />
+					  </ButtonLinkPrimary>
                   </div>
                 </div>
               </div>

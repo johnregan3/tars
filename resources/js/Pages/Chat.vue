@@ -15,6 +15,11 @@ let form = useForm({
 
 const messagesList = ref(null);
 const messageBlock = ref(null);
+const inputLength = ref(0);
+
+let updateInputLength = (event) => {
+  inputLength.value = event.target.value.length;
+};
 
 onMounted(() => {
   messagesList.value.scrollTop = messagesList.value.scrollHeight;
@@ -41,8 +46,6 @@ let sendMessage = () => {
     },
   });
 };
-
-
 </script>
 
 <template>
@@ -109,12 +112,46 @@ let sendMessage = () => {
                         @submit.prevent="sendMessage"
                         class="flex items-stretch justify-between gap-4"
                       >
-                        <div
-                          v-show="form.processing"
+                        <div class="w-full">
+                          <div
+                            :class="[
+                              form.errors.message
+                                ? 'justify-between'
+                                : 'justify-end',
+                              'flex items-center mb-2',
+                            ]"
+                          >
+                            <span
+                              v-if="form.errors.message"
+                              class="text-sm text-red-500"
+                            >
+                              {{ form.errors.message }}
+                            </span>
+                            <span
+                              :class="[
+                                inputLength > 500
+                                  ? 'text-red-500'
+                                  : 'text-teal-500',
+                                'text-sm text-gray-500',
+                              ]"
+                            >
+                              {{ inputLength }} / 500
+                            </span>
+                          </div>
+                          <Textarea
+                            ref="messageBlock"
+                            v-model="form.message"
+                            :disabled="form.processing"
+                            @input="updateInputLength"
+                            class="block w-full"
+                          ></Textarea>
+                        </div>
+						<div
+                          v-if="form.processing"
                           class="flex items-center justify-center"
                         >
                           <div
-                            class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
+                            class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-teal-500 border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
                             role="status"
                           >
                             <span
@@ -123,16 +160,7 @@ let sendMessage = () => {
                             >
                           </div>
                         </div>
-                        <Textarea
-                          ref="messageBlock"
-                          v-model="form.message"
-                          :disabled="form.processing"
-                          class="block"
-                        ></Textarea>
-                        <div v-if="form.errors.message">
-                          {{ form.errors.message }}
-                        </div>
-                        <ButtonPrimary
+                        <ButtonPrimary v-else
                           :class="'bg-teal-500'"
                           :disabled="form.processing"
                           >Send</ButtonPrimary
