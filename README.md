@@ -50,20 +50,30 @@ I'd also like to provide TARS with a way to search the internet for answers and 
 
 *Note: this is what I did to install it on my Mac. I have no idea how to do it on your machine. I spent almost a full day working with ChatGPT to get the PostreSQL up and configured. Best of luck!*
 
-### Pre-Setup Notes
-- This requires using a PostgreSQL (as opposed to MySQL) database. [[setup](https://www.codementor.io/@engineerapart/getting-started-with-postgresql-on-mac-osx-are8jcopb)].
-- I used Homebrew to install PostgreSQL: `brew install postgresql`
-- Install the pgvector PostgreSQL extension: `brew install pgvector/brew/pgvector`
-- I installed Redis on my Mac M1 (16GB RAM) to help with caching.
+### Requirements
+These will be needed on your server in addition to basic PHP and whatnot (I'm coming at this from the perspective of a web developer).
+
+- Python version >3.7, <4
+- PostgreSQL (as opposed to MySQL) database. [[setup](https://www.codementor.io/@engineerapart/getting-started-with-postgresql-on-mac-osx-are8jcopb)].
+  - I used Homebrew to install PostgreSQL: `brew install postgresql`
+- The `pgvector` PostgreSQL extension: `brew install pgvector/brew/pgvector`
+- (Optional) I installed Redis on my Mac M1 (16GB RAM) to help with caching.
 
 ### Setup
-1. Clone this repo.
+1. Clone this repo. `cd` into the new directory before running the following commands.
 
-2. Run `composer install`
+2. Set up the Python configuration.
+    1. run `python3 -m venv tarsenv`
+    2. run `source tarsenv/bin/activate`
+	3. I had to run `pip install --upgrade charset_normalizer --no-cache-dir` on my Mac M1 to get the `openai` module working
+    3. Run `pip install -r requirements.txt` to install Python dependencies.
+    4. run `deactivate`
 
-3. Run `npm install`
+3. Run `composer install`
 
-4. To replicate my config, update your `.env` file to include the following:
+4. Run `npm install`
+
+5. To replicate my config, update your `.env` file to include the following:
 ```
 OPENAI_API_KEY=sk-...g
 OPENAI_ORGANIZATION=

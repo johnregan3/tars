@@ -55,18 +55,20 @@ class OpenAIAPIController extends Controller
 	 *
 	 * Basically, a "one-off" chat. No conversation.
 	 *
+	 * @todo May need to remove this if the Python script is working.
+	 *
 	 * @param string $prompt A prompt for the Reqeust.
 	 *
 	 * @return string The text response from the API.
 	 */
 	public static function gpt3Completion($prompt)
 	{
-		// se defaults for both temperature and top_p.
+		// Use defaults for both temperature and top_p.
 		$args = [
+			'model'             => 'text-davinci-003',
 			'max_tokens'        => 1000,
 			'frequency_penalty' => 0.5,
 			'presence_penalty'  => 0.75,
-			'model'             => 'text-davinci-003',
 			'prompt'            => $prompt,
 		];
 
