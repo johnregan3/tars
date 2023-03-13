@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('summaries', function (Blueprint $table) {
             $table->id();
 			$table->longText('content');
-            $table->vector('embedding');
+            $table->vector('embedding')->default(json_encode([0]));
             $table->timestamps();
         });
     }

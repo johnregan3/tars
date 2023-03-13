@@ -14,11 +14,12 @@ return new class extends Migration
     public function up()
     {
         Schema::create('memories', function (Blueprint $table) {
+			$default_vector = json_encode(array_fill(0, 1536, 0));
             $table->id();
 			$table->unsignedBigInteger('speaker_id');
             $table->foreign('speaker_id')->references('id')->on('users');
 			$table->longText('content');
-            $table->vector('embedding');
+            $table->vector('embedding')->default($default_vector);
             $table->timestamps();
         });
     }

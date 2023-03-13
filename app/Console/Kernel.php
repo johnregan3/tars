@@ -4,6 +4,7 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use App\Console\Commands\TarsEmbed;
 
 class Kernel extends ConsoleKernel
 {
@@ -16,6 +17,9 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
+
+		// Run the tars:embed command every minute.
+		$schedule->command(TarsEmbed::class)->everyMinute();
     }
 
     /**

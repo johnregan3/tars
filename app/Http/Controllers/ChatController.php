@@ -58,6 +58,8 @@ class ChatController extends Controller
 			'content'    => $input_string,
 		]);
 
+		ray( $memory )->green();
+
 		$newMemory = new MemoryController($memory);
 		$newMemory->createAIMemory();
 

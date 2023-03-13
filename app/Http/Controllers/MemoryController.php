@@ -64,7 +64,6 @@ class MemoryController extends Controller
 		Memory::create([
 			'speaker_id' => env('CHAT_TARS_ID', 2),
 			'content'    => $completion,
-			'embedding'  => OpenAI::gpt3Embedding($completion),
 		]);
 		return;
 	}
@@ -103,17 +102,28 @@ class MemoryController extends Controller
 	 */
 	protected function createSummary()
 	{
+
+		$text = 'Our conversation has not gone on long enough to summarize. Keep on chatting!';
 		// Get the *related* memories, not recent ones.
-		$memories = $this->memory->relatedMemories()->toArray();
 
-		$relatedConversation = array_map(function ($memory) {
-			return User::find($memory['speaker_id'])->name . ': ' . $memory['content'];
-		}, $memories);
+		$memories = $this->memory->relatedMemories();
 
-		$relatedConversation = implode(PHP_EOL . PHP_EOL, $relatedConversation);
-		$relatedConversation = empty($relatedConversation) ? 'Our conversation has not gone on long enough to summarize. Keep on chatting!' : trim($relatedConversation);
+		if ( ! empty( $memories ) ) {
 
-		$prompt = sprintf(self::summaryTemplate(), $relatedConversation);
+			$memories = $memories->toArray();
+
+			$relatedConversation = array_map(function ($memory) {
+				return User::find($memory['speaker_id'])->name . ': ' . $memory['content'];
+			}, $memories);
+
+			$relatedConversation = implode(PHP_EOL . PHP_EOL, $relatedConversation);
+			$relatedConversation = empty($relatedConversation) ? 'Our conversation has not gone on long enough to summarize. Keep on chatting!' : trim($relatedConversation);
+			if ( ! empty( $relatedConversation ) ) {
+				$text = $relatedConversation;
+			}
+		}
+
+		$prompt = sprintf(self::summaryTemplate(), $text);
 
 		$completion = OpenAI::gpt3Completion($prompt);
 
@@ -125,6 +135,10 @@ class MemoryController extends Controller
 		$summary = Summary::create([
 			'content' => $completion,
 		]);
+
+		if ( empty( $memories ) ) {
+			return $summary->content;
+		}
 
 		// Attach the related memories to the summary.
 		array_map(function ($memory) use ($summary) {
@@ -153,11 +167,12 @@ class MemoryController extends Controller
 	 */
 	public static function promptTemplate()
 	{
-		return 'I am a chatbot named ' . env('CHAT_TARS_NAME', 'TARS') . '. My goals are to reduce suffering, increase prosperity, and increase understanding. I will read the conversation notes and recent messages, and then I will provide a long, verbose, detailed answer. I will then end my response with a follow-up or leading question.\n\n
-		The following are notes from earlier conversations with' . env('CHAT_USER_NAME', 'USER') . ':\n\n
+		return 'You are  ' . env('CHAT_TARS_NAME', 'TARS') . '. Your goals are to reduce suffering, increase prosperity, and increase understanding. Read these conversation notes and recent messages.\n\n
+		CONVERSATION NOTES: earlier conversations with' . env('CHAT_USER_NAME', 'USER') . ':\n\n
 		%1$s\n\n
-		The following are the most recent messages in the conversation, starting with the oldest:\n\n
+		RECENT MESSAGES:\n\n
 		%2$s\n\n
-		I will now provide a detailed response, followed by a question:\n\n'  . env('CHAT_TARS_NAME', 'TARS') . ':';
+		Give a detailed response. Answer the question as truthfully as possible, and if you are unsure of the answer, say so. Alwasy follow with a question:\n\n
+		'  . env('CHAT_TARS_NAME', 'TARS') . ':';
 	}
 }
