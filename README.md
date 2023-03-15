@@ -4,7 +4,7 @@ GPT-3 chatbot with long term memory, as a Laravel App
 
 |   |   |
 |-----------------|------------------------|
-| :exclamation:  | **Breaking changes coming in v0.2.**<br>TARS run on Python & SQLite.<br>No Laravel, completely new local environment.<br>Expected deployment date: March 17, 2023 |
+| :exclamation:  | **Breaking changes coming in v0.2.**<br>TARS will run on Python & SQLite.<br>No Laravel, completely new local environment.<br>Expected deployment date: March 17, 2023 |
 |  |  |
 
 
