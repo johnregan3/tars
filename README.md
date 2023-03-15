@@ -1,6 +1,9 @@
 # TARS
 
-GPT-3 chatbot with long term memory, as a Laravel App 
+GPT-3 chatbot with long term memory, as a Laravel App
+
+| :exclamation:  100% new version coming in v0.2. Will run on Python & SQLite. No laravel, completely new local environment.   |
+|-----------------------------------------|
 
 ![tars-github-2](https://user-images.githubusercontent.com/2053940/224233487-3e2e4c17-670e-4cb8-9561-929d1fa7b76e.jpg)
 
