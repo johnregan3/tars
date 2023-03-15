@@ -2,8 +2,9 @@
 
 GPT-3 chatbot with long term memory, as a Laravel App
 
-| :exclamation:  100% new version coming in v0.2.<br>Will run on Python & SQLite. No laravel, completely new local environment.   |
-|-----------------------------------------|
+<div style="display: flex; align-items: stretch; margin: 20px auto; border: 1px solid gray; border-left: 4px solid #ef4444; text-align: center; max-width: 90%;">
+<div style="display: flex; align-items:center; padding: 20px; border-right: 1px solid gray;">:exclamation:</div> <div style="padding: 20px; text-align: center; flex: 1;"><strong>Breaking changes coming in v0.2.</strong><br>TARS run on Python & SQLite.<br>No Laravel, completely new local environment.<br/>Expected deployment date: March 17, 2023</div>
+</div>
 
 ![tars-github-2](https://user-images.githubusercontent.com/2053940/224233487-3e2e4c17-670e-4cb8-9561-929d1fa7b76e.jpg)
 
