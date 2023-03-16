@@ -11,7 +11,7 @@ from flask import Flask, current_app, render_template, send_from_directory, requ
 load_dotenv()
 db_filename = os.getenv('DB_NAME', 'tars') + '.db'
 
-app = Flask(__name__, static_folder='vue/dist/assets', template_folder='vue/dist/')
+app = Flask(__name__, static_folder='web/dist/assets', template_folder='web/dist/')
 
 # Set up CORS.
 CORS(app, resources={r"/api": {"origins": "*"}})
@@ -30,6 +30,7 @@ with app.app_context():
 @app.route('/chat')
 @app.route('/')
 def index():
+    print('here')
     return render_template('index.html')
 
 @app.route('/api/messages', methods=['POST', 'GET'])
@@ -82,4 +83,8 @@ def get_tars_reply():
         return False
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    print('********************************************************')
+    print('*** TARS URL is http://localhost:4200')
+    print("*** Ignore URLs mentioned below. They're for the API.")
+    print('********************************************************')
+    app.run(host='0.0.0.0', port=5000)

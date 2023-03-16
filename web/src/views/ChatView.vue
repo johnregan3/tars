@@ -81,7 +81,8 @@ let sendMessage = () => {
       if (response.data.length === 1) {
         response.data[0].isNew = true
         messages.value.push(response.data[0])
-        console.log('GPT Response Time: ' + (performance.now() - start) / 100 + 's')
+		form.content = ''
+        console.log('GPT Response Time: ' + (performance.now() - start) / 1000 + 's')
       }
       nextTick(() => {
         readyForm()

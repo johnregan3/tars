@@ -1,5 +1,6 @@
 
 
+import os
 import requests
 from sqlalchemy import event
 from helpers import time_ago

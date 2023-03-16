@@ -12,16 +12,18 @@
 !Dockerfile
 !README.md
 !requirements.txt
-!*.py
+!tars.sh
+!app/
+!app/*.py
 !docs/
 !docs/*
 !templates/
 !/templates/*
-!vue
-!vue/*.*
-!vue/**/*
-vue/.vscode
-vue/node_modules
+!web
+!web/*.*
+!web/**/*
+web/.vscode
+web/node_modules
 
 
 

@@ -1,0 +1,8 @@
+__pycache__
+.gitignore
+Pipfile
+Pipfile.lock
+docs/
+instance/
+.github/
+README.md
