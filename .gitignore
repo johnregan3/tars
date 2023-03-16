@@ -2,6 +2,8 @@
 *
 # Allow dot files in the root directory.
 !.gitignore
+!.github/
+!.github/*
 !.env.sample
 !.nvmrc
 !.dockerignore
@@ -10,6 +12,9 @@
 !README.md
 !requirements.txt
 !*.py
+!docs/
+!docs/*
+!templates/
 !/templates/*
 !vue
 !vue/*.*
