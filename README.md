@@ -1,6 +1,6 @@
 # TARS
 
-GPT-3 chatbot with long term memory, as a Laravel App
+GPT-3 chatbot with long term memory.
 
 ![tars-github-2](https://user-images.githubusercontent.com/2053940/224233487-3e2e4c17-670e-4cb8-9561-929d1fa7b76e.jpg)
 
@@ -10,21 +10,26 @@ This is an attempt to recreate [Dave Shapiro](https://www.patreon.com/daveshap)'
 
 To his credit, Shaprio's project was an experiment and was never intended to scale. When I tried out his code, I wanted to play with the chatbot longer to see what it was capable of, but was shocked at how quickly the data amassed on my hard drive.  This is what inspired me to try to put all of it into a database.
 
-This app is designed to be run on your local webserver (like [Laravel valet](https://laravel.com/docs/10.x/valet)). Once you have it up and running, start chatting with TARS. It takes a bit of interaction for it to gather enough data to give good responses, but I was able to have some interesting conversations with TARS, covering topics ranging from my personal goals, fried chicken recipes, ceiling fans in cars, and what I enjoy most about the people I love.
+This app is run locally in your web browser. Once you have it up and running, start chatting with TARS. It takes a bit of interaction for it to gather enough data to give good responses, but I was able to have some interesting conversations with TARS, covering topics ranging from my personal goals, fried chicken recipes, ceiling fans in cars, and what I enjoy most about the people I love.
 
+---
 ## Installation
-
-*Note: this is what I did to install it on my Mac. I have no idea how to do it on your machine. I spent almost a full day working with ChatGPT to get the PostreSQL up and configured. Best of luck!*
+---
+*Note: Unfortunately, I cannot devote much time to providing support for setup issues because I don't want to get fired from my day job*
 
 ### Requirements
-- Docker Desktop (or some way to run docker locally)
-- Vue CLI `npm install -g @vue/cli` (Make sure you configure for Vue v3)
-
+- Python
+  - You probably have this, but it's a requirement.
+  - In your command shell run `python -V` or even `python3 -V`. If you get a "command not found" message, you gotta get Python on your own.
+- [Docker](https://docs.docker.com/get-docker/)
+- Your [OpenAI API Key](https://help.openai.com/en/articles/4936850-where-do-i-find-my-secret-api-key)
 
 ### Setup
-1. Clone this repo.
+1. Download these files. You have two options:
+    - Clone this repo: `git clone git@github.com:johnregan3/tars.git`
+	- Download the [zip file](https://github.com/johnregan3/tars/archive/refs/heads/trunk.zip) like a caveman.
 
-4. Set up your own config file.  Copy `.env.example` to `.env` and update these settings:
+2. Inside of your tars/ directory (wherever you put it), set up your config file.  Copy or rename `.env.example` to `.env` and update these settings:
 ```
 OPENAI_API_KEY=sk-...g
 OPENAI_ORGANIZATION=
@@ -32,27 +37,44 @@ USER_NAME=Cooper
 TARS_NAME=TARS
 DB_NAME=tars
 ```
+You can leave the OpenAI Organization blank if you don't know it.
+
 *Note that "Cooper" can be replaced with your name, and you can call "TARS" whatever the heck you want: HAL, Ava, Shakira, it doesn't matter.*
 
-5. Run `python -m venv ./venv` to create a virtual environment.
+3. Run `bash tars.sh` to fire it up and start Docker.
 
-6. Run `source venv/build/activate` to start the Python environment.
+4. Your site will be available at `http://localhost:4200`
+
+🚨 **Important Note:** Your chat database lives inside of your Docker container, so if you destroy the container, your chat history will be wiped out.
+
+---
+## Advanced Stuff
+---
+To do your own develpment or customize the app, here are some further instructions:
+
+1. Run `python -m venv ./venv` to create a virtual environment.
+
+2. Run `source venv/build/activate` to start the Python environment.
    1. To shut it down, simply run the command `deactivate`
 
-7. Set up the frontend files. Start by changing directories: `cd vue`
+3. Run `pip install -r requirements.txt`
 
-8. Run `npm install`
+3. For toying with the front end Vue files, sart by changing directories: `cd web`
 
-9. Run `npm run build`
-    - You can also run `npm run dev` to launch a frontend preview if you want to make design changes. It will be viewable at `http://localhost:5173/`. This is just a preview for Vue development.
-	- Note that Python will later give you a different URL for your actual site.
+4. Run `npm install` to get everything ready to go.
 
-10. Run `cd ../` to go back up to the main directory.
+5. Run `npm run build` to compile any edits you make in this directory.
+    - You can run `npm run dev` to launch a frontend preview if you want to play with the design. It will be viewable at `http://localhost:5173/`. Note that *this is just a preview URL for Vue development*, so the database won't be connected. Python will later give you a different URL for your actual dev site with the database hooked up and whatnot.
 
-11.
+6. Run `cd ../` to go back up to the main directory.
 
+7. Run the app. You have two options:
+    - Run `python app.py` to fire up the dev site. It will be at `http://127.0.0.1:5000`
+	- Or run `bash tars.sh` to start Docker, then visit `http://localhost:4200` to enjoy the fruits of your labor.
 
+---
 ## Credits
+---
 
 - Architecture inspired by [Dave Shapiro's](https://www.patreon.com/daveshap) work
 - Dave Shapiro's YT video Series:
