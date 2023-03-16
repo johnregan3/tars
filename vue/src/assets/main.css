@@ -1,0 +1,34 @@
+@import './base.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+	background: #000 url('/src/assets/interstellar.webp') no-repeat right center fixed !important;
+	background-size: cover !important;
+}
+
+.prose pre {
+	background-color: theme('colors.slate.800');
+	color: theme('colors.teal.400');
+	font-weight: 400;
+	padding: 0.8em;
+	border-radius: 0.3em;
+	font-size: 0.9em;
+}
+
+.prose :not(pre)>code {
+	background-color: theme('colors.slate.800');
+	color: theme('colors.teal.400');
+	font-weight: 400;
+	padding: 0.2em 0.4em;
+	border-radius: 0.3em;
+	font-size: 0.9em;
+}
+
+@media (min-width: 1024px) {
+	body {
+		display: flex;
+		place-items: center;
+	}
+}

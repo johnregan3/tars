@@ -1,0 +1,21 @@
+# Ignore everything but what is allowed here.
+*
+# Allow dot files in the root directory.
+!.gitignore
+!.env.sample
+!.nvmrc
+!.dockerignore
+!docker-compose.yml
+!Dockerfile
+!README.md
+!requirements.txt
+!*.py
+!/templates/*
+!vue
+!vue/*.*
+!vue/**/*
+vue/.vscode
+vue/node_modules
+
+
+
