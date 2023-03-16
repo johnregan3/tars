@@ -4,6 +4,7 @@
 !.gitignore
 !.github/
 !.github/*
+!.github/**/*
 !.env.sample
 !.nvmrc
 !.dockerignore
