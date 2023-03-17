@@ -34,18 +34,23 @@ with app.app_context():
 @app.route("/chat")
 @app.route("/")
 def index():
-    return render_template("index.html")
+    messages = Message.query.all()
+    message_list = [message.to_dict() for message in messages]
+    print(message_list)
+    props = {"messages": message_list}
+    return render_template("index.html", props=props)
 
 
 @app.route("/api/messages", methods=["POST", "GET"])
 @cross_origin(origin="*", headers=["content-type"])
 def add_message():
     if request.method == "POST":
+        # TODO: Don't use a list.
         reply = []
         data = request.get_json()
 
         # Save the Cooper message.
-        user_message = save_message(data["user_id"], data["content"])
+        save_message(data["user_id"], data["content"])
 
         # Get the TARS reply and save it.
         tars_reply = get_tars_reply()

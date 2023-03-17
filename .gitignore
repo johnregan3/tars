@@ -1,6 +1,6 @@
 # Ignore everything but what is allowed here.
 *
-# Allow dot files in the root directory.
+# Whitelist.
 !.gitignore
 !.github/
 !.github/*

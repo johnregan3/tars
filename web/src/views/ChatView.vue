@@ -14,14 +14,10 @@ let form = reactive({
   processing: false
 })
 
-const testcontent =
-  "<p>Absolutely! <code>Here are five more bad cat name</code> you may want to avoid:</p><pre><code>1. Garfield\n2. Mittens\n3. Snowball\n4. Tiger\n5. Shadow\n</code></pre>When it comes to naming your cat, it's important to consider the uniqueness of the name and how it reflects your pet's personality. Additionally, you may want to consider the length of the name and how easy it is to remember. You may also want to consider the potential for nicknames or abbreviations, as well as the potential for confusion with other pets or family members. What other factors do you think are important to consider when naming a cat?</p>"
-
 const messagesList = ref(null)
 const messageTextarea = ref(null)
 const inputLength = ref(0)
 const messages = ref([])
-const ws = ref(null)
 
 let updateInputLength = (event) => {
   inputLength.value = event.target.value.length
@@ -32,7 +28,7 @@ onMounted(() => {
   axios
     .get('/api/messages')
     .then((response) => {
-      console.log(performance.now() - start)
+      console.log('App API Initial Response Time: ' + (performance.now() - start) / 1000 + 's')
       messages.value = response.data
       nextTick(() => {
         scrollToBottom()
@@ -81,7 +77,7 @@ let sendMessage = () => {
       if (response.data.length === 1) {
         response.data[0].isNew = true
         messages.value.push(response.data[0])
-		form.content = ''
+        form.content = ''
         console.log('GPT Response Time: ' + (performance.now() - start) / 1000 + 's')
       }
       nextTick(() => {
@@ -142,37 +138,6 @@ let sendMessage = () => {
                         </div>
                       </div>
                     </li>
-                    <!--
-					<li
-                      :class="[
-                        false
-                          ? 'bg-slate-700/75 border-gray-800/75 '
-                          : 'bg-slate-800/75 border-gray-700 ',
-                        false ? 'animate-border-highlight-fade' : '',
-                        'chat_list__item mb-4 p-4 border rounded-md'
-                      ]"
-                    >
-                      <div class="flex pr-4">
-                        <img
-                          :class="[
-                            false ? 'bg-slate-200/60' : 'bg-zinc-200/60',
-                            'h-10 w-10 rounded-full mr-3 bg-cover'
-                          ]"
-                          :src="false? imgTars : imgCooper"
-                          alt="YOO"
-                        />
-                        <div class="flex-1">
-                          <div class="flex items-center justify-between mb-2">
-                            <h4 class="text-md font-bold text-white mt-2">
-                              Coopie
-                            </h4>
-                          </div>
-                          <div v-html="testcontent" class="prose mb-2 text-slate-200"></div>
-                          <p class="text-sm text-gray-500">{{ yep }}</p>
-                        </div>
-                      </div>
-                    </li>
-					-->
                   </ul>
                   <div class="w-full">
                     <div class="w-full px-2 mx-auto bg-transparent backdrop-blur">
