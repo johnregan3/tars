@@ -13,14 +13,23 @@ To his credit, Shaprio's project was an experiment and was never intended to sca
 This app is run locally in your web browser. Once you have it up and running, start chatting with TARS. It takes a bit of interaction for it to gather enough data to give good responses, but I was able to have some interesting conversations with TARS, covering topics ranging from my personal goals, fried chicken recipes, ceiling fans in cars, and what I enjoy most about the people I love.
 
 ---
+## Super-Quickstart
+---
+
+1. `git clone git@github.com:johnregan3/tars.git`
+2. Set up configuration in a `.env` file
+3. `bash tars.sh`
+4. Visit `http://localhost:4200`
+5. Chat with your new best friend
+
+---
 ## Installation
 ---
 *Note: Unfortunately, I cannot devote much time to providing support for setup issues because I don't want to get fired from my day job*
 
 ### Requirements
-- Python
-  - You probably have this, but it's a requirement.
-  - In your command shell run `python -V` or even `python3 -V`. If you get a "command not found" message, you gotta get Python on your own.
+- Python 3.0+
+  - To confirm, in your command shell run `python -V` or even `python3 -V`.
 - [Docker](https://docs.docker.com/get-docker/)
 - Your [OpenAI API Key](https://help.openai.com/en/articles/4936850-where-do-i-find-my-secret-api-key)
 
@@ -54,7 +63,7 @@ To do your own develpment or customize the app, here are some further instructio
 
 1. Run `python -m venv ./venv` to create a virtual environment.
 
-2. Run `source venv/build/activate` to start the Python environment.
+2. Run `source venv/bin/activate` to start the Python environment.
    1. To shut it down, simply run the command `deactivate`
 
 3. Run `pip install -r requirements.txt`
@@ -69,9 +78,17 @@ To do your own develpment or customize the app, here are some further instructio
 6. Run `cd ../` to go back up to the main directory.
 
 7. Run the app. You have two options:
-    - Run `python app.py` to fire up the dev site. It will be at `http://127.0.0.1:5000`
+    - Run `python app.py` to fire up the dev site. It will be at `http://127.0.0.1:5500`
 	- Or run `bash tars.sh` to start Docker, then visit `http://localhost:4200` to enjoy the fruits of your labor.
 
+---
+## Changelog
+---
+```
+v0.2 (March 2023) Major update. Now runs a Docker container with Python, Flask, SQLite, and Vue.
+
+v0.1 (Early March 2023) Initial Release. Uses PHP/JS with Laravel, Vue and PostgreSQL. Requires local dev server like Laravel Valet.
+```
 ---
 ## Credits
 ---

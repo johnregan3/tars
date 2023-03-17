@@ -1,4 +1,5 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+
 
 def time_ago(dt):
     now = datetime.utcnow()
