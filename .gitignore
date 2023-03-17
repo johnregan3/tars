@@ -16,8 +16,6 @@
 !*.py
 !docs/
 !docs/*
-!templates/
-!/templates/*
 !web
 !web/*.*
 !web/**/*
