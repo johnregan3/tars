@@ -1,8 +1,4 @@
 import os
-from dotenv import load_dotenv
-
-load_dotenv()
-
 tars_name = os.getenv("TARS_NAME", "TARS")
 user_name = os.getenv("USER_NAME", "Cooper")
 

@@ -1,7 +1,8 @@
 import os
+import json
 from sqlalchemy import event
+from sqlalchemy.ext.mutable import MutableList
 from helpers import time_ago
-from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
@@ -29,6 +30,7 @@ class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.String(255))
     speaker_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    embedding = db.Column(MutableList.as_mutable(db.String), default=json.dumps([]))
     timestamp = db.Column(db.DateTime, default=db.func.current_timestamp())
 
     def to_dict(self):
@@ -40,9 +42,15 @@ class Message(db.Model):
             "timestamp": time_ago(self.timestamp),
         }
 
+    def get_embedding(self):
+        return json.loads(self.embedding)
+
+    def set_embedding(self, embedding):
+        self.embedding = json.dumps(embedding)
+
 
 # Save a message to the database.
 def save_message(speaker_id, content):
-    Message(speaker_id=speaker_id, content=content)
+    message = Message(speaker_id=speaker_id, content=content)
     db.session.add(message)
     db.session.commit()

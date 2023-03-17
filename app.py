@@ -1,9 +1,8 @@
 import os
 from dotenv import load_dotenv
-from models import db, Message, User, save_message
+from models import db, Message, save_message
 from prompts import completion_prompt
 from openaiAPI import gpt3_completion
-from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS, cross_origin
 from flask import (
     Flask,

@@ -13,8 +13,7 @@
 !README.md
 !requirements.txt
 !tars.sh
-!app/
-!app/*.py
+!*.py
 !docs/
 !docs/*
 !templates/
