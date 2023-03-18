@@ -1,10 +1,10 @@
 import os
 import numpy as np
-from utils import time_ago
+from .utilsTime import time_ago
 from sqlalchemy import event
 from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
-from openaiAPI import gpt3_embedding
+from .openaiAPI import gpt3_embedding
 from scipy.spatial.distance import cosine
 
 load_dotenv()

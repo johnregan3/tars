@@ -1,5 +1,7 @@
 # TARS
 
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 GPT-3 chatbot with long term memory.
 
 ![tars-github-2](https://user-images.githubusercontent.com/2053940/224233487-3e2e4c17-670e-4cb8-9561-929d1fa7b76e.jpg)
@@ -56,7 +58,7 @@ You can leave the OpenAI Organization blank if you don't know it.
 
 5. Press `Ctrl+C` to stop and exit.
 
-🚨 **Important Note:** Your chat database lives inside of your Docker container, so if you destroy —not merely stop— the container, your chat history will be wiped out.
+🚨 **Important Note:** Your chat database lives inside of your Docker container, so if you destroy — not just stop — the container, your chat history will be wiped out.
 
 ---
 ## Advanced Stuff

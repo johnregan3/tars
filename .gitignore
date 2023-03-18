@@ -14,8 +14,11 @@
 !requirements.txt
 !tars.sh
 !*.py
+!app/
+!app/*.*.py
 !docs/
 !docs/*
+
 !web
 !web/*.*
 !web/**/*
