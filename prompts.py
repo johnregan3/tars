@@ -1,14 +1,20 @@
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 tars_name = os.getenv("TARS_NAME", "TARS")
 user_name = os.getenv("USER_NAME", "Cooper")
 
 # Basic conversational prompt.
-def completion_prompt(conversation):
-    prompt = """I am a chatbot named {0}. My goal is to assist {1} to reach their goals. I will read the recent messages, and then I will provide a reponse.
+def completion_prompt(conversation, related):
+    prompt = """I am a chatbot named {0}. My goal is to assist {1} to reach their goals. I will read the related and recent messages, and then I will provide a reponse.
 
-The following are the most recent messages in the conversation:
+Here are the related messages:
 {2}
 
+The following are the most recent messages in the conversation:
+{3}
+
 I will now provide a long, detailed, verbose response, followed by a question:
-{3}:"""
-    return prompt.format(tars_name, user_name, conversation, tars_name)
+{4}:"""
+    return prompt.format(tars_name, user_name, related, conversation, tars_name)

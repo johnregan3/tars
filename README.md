@@ -50,11 +50,13 @@ You can leave the OpenAI Organization blank if you don't know it.
 
 *Note that "Cooper" can be replaced with your name, and you can call "TARS" whatever the heck you want: HAL, Ava, Shakira, it doesn't matter.*
 
-3. Run `bash tars.sh` to fire it up and start Docker.
+3. Open up your terminalun `bash tars.sh` to fire it up and start Docker.
 
 4. Your site will be available at `http://localhost:4200`
 
-🚨 **Important Note:** Your chat database lives inside of your Docker container, so if you destroy the container, your chat history will be wiped out.
+5. Press `Ctrl+C` to stop and exit.
+
+🚨 **Important Note:** Your chat database lives inside of your Docker container, so if you destroy —not merely stop— the container, your chat history will be wiped out.
 
 ---
 ## Advanced Stuff

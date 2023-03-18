@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from models import db, Message, save_message
+from models import db, Message, save_message, get_similar_messages
 from prompts import completion_prompt
 from openaiAPI import gpt3_completion
 from flask_cors import CORS, cross_origin
@@ -36,7 +36,6 @@ with app.app_context():
 def index():
     messages = Message.query.all()
     message_list = [message.to_dict() for message in messages]
-    print(message_list)
     props = {"messages": message_list}
     return render_template("index.html", props=props)
 
@@ -46,29 +45,61 @@ def index():
 def add_message():
     if request.method == "POST":
         # TODO: Don't use a list.
-        reply = []
         data = request.get_json()
 
         # Save the Cooper message.
-        save_message(data["user_id"], data["content"])
+        user_message = save_message(data["user_id"], data["content"])
 
         # Get the TARS reply and save it.
-        tars_reply = get_tars_reply()
+        tars_reply = get_tars_reply(user_message)
+
         if tars_reply:
             tars_reply = save_message(2, tars_reply)
-            reply.append(Message.query.filter_by(id=tars_reply.id).first().to_dict())
 
-        return jsonify(reply)
+            # Debugging.
+            get_related_messages(Message.query.filter_by(id=tars_reply.id).first())
+
+            tars_reply = Message.query.filter_by(id=tars_reply.id).first().to_dict()
+
+        else:
+            tars_reply = {
+                "id": "x",
+                "content": "I'm sorry, I had an error connecting.",
+                "speaker_name": os.getenv("TARS_NAME", "TARS"),
+                "speaker_id": 2,
+                "timestamp": "Just now",
+            }
+
+        return jsonify([tars_reply])
     if request.method == "GET":
         messages = Message.query.all()
         message_list = [message.to_dict() for message in messages]
         return jsonify(message_list)
 
 
+# TODO create Vue router for this.
+@app.route("/api/debug/<int:user_id>", methods=["POST"])
+def get_user_messages(user_id):
+    try:
+        messages = (
+            Message.query.filter_by(speaker_id=user_id)
+            .order_by(Message.timestamp.desc())
+            .all()
+        )
+        message_list = [message.to_dict() for message in messages]
+        return jsonify(message_list)
+    except Exception as e:
+        print("Error getting User messages: %s" % str(e))
+        return jsonify([])
+
+
 # Get the TARS reply.
-def get_tars_reply():
+def get_tars_reply(user_message):
     conversation = get_recent_messages()
-    prompt = completion_prompt(conversation)
+    related = get_related_messages(user_message)
+    prompt = completion_prompt(conversation, related)
+    print("Prompt:")
+    print(prompt)
     try:
         return gpt3_completion(prompt)
     except:
@@ -88,6 +119,15 @@ def stringify_messages(messages):
 def stringify_message(message):
     message = message.to_dict()
     return message["speaker_name"] + ": " + message["content"] + "\n"
+
+
+def get_related_messages(message):
+    messages = get_similar_messages(message)
+    if len(messages) == 0:
+        return ""
+
+    output_string = stringify_messages(messages)
+    return output_string
 
 
 # Create one string containing the user name
@@ -113,9 +153,9 @@ if __name__ == "__main__":
 
     debug_message = """
     \033[94m***********************************************************
-    * 👉 TARS URL is \033[4m{0}\033[0m\033[94m
-    * 👉 Ignore any URLs mentioned below. They\'re for the API.
-    ***********************************************************\033[0m
+    \033[94m* 👉 TARS URL is \033[4m{0}\033
+    \033[94m* 👉 Ignore any URLs mentioned below. They\'re for the API.
+    \033[94m***********************************************************\033[0m
     """
     print(debug_message.format(prompt_note_url))
     maybe_debug = is_docker()

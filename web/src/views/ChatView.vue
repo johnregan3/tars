@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, reactive, nextTick, computed } from 'vue'
+import { ref, onMounted, reactive, nextTick } from 'vue'
 import axios from 'axios'
 import Spotlight from '@v/Spotlight.vue'
 import ButtonPrimary from '@c/SpotButtonPrimary.vue'

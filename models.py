@@ -1,7 +1,13 @@
 import os
+import numpy as np
+from utils import time_ago
 from sqlalchemy import event
-from helpers import time_ago
+from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
+from openaiAPI import gpt3_embedding
+from scipy.spatial.distance import cosine
+
+load_dotenv()
 
 db = SQLAlchemy()
 
@@ -38,6 +44,7 @@ class Message(db.Model):
             "speaker_id": self.user.id,
             "speaker_name": self.user.name,
             "timestamp": time_ago(self.timestamp),
+            "has_embedding": True if len(self.embedding) == 0 else False,
         }
 
     def get_embedding(self):
@@ -45,6 +52,13 @@ class Message(db.Model):
 
     def set_embedding(self, embedding):
         self.embedding = embedding
+        db.session.commit()
+
+    def fetch_embedding(self):
+        embedding = gpt3_embedding(self.content)
+        if embedding:
+            self.set_embedding(embedding)
+            db.session.commit()
 
 
 # Save a message to the database.
@@ -52,4 +66,46 @@ def save_message(speaker_id, content):
     message = Message(speaker_id=speaker_id, content=content)
     db.session.add(message)
     db.session.commit()
+    message.fetch_embedding()
     return message
+
+
+def get_similar_messages(message):
+    # Fetch all messages from the database except the input message
+    all_messages = (
+        Message.query.filter(Message.id != message.id)
+        .order_by(Message.timestamp.desc())
+        .all()
+    )
+
+    # Convert the input message's embedding to a NumPy array
+    input_embedding = np.array(message.get_embedding())
+
+    # Compute cosine similarities between the input message and all other messages
+    similarities = []
+    threshold = 0.8
+    for m in all_messages:
+        message_embedding = np.array(m.embedding)
+        if message_embedding.shape == (1536,):
+            similarity = 1 - cosine(input_embedding, message_embedding)
+
+            if similarity >= threshold:
+                similarities.append((m, similarity))
+
+    # Sort the messages by similarity in descending order
+    sorted_similarities = sorted(similarities, key=lambda x: x[1], reverse=True)
+
+    # if sorted_similarities is empty, return an empty list
+    if len(sorted_similarities) == 0:
+        return []
+
+    # Get the top 5 most similar messages
+    top_5_similar_messages = sorted_similarities[:5]
+
+    # remove the similarity score from the tuple.
+    top_5_message_objects = [
+        message_tuple[0] for message_tuple in top_5_similar_messages
+    ]
+
+    print(top_5_message_objects)
+    return top_5_message_objects
