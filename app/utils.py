@@ -1,14 +1,21 @@
+import os
+from dotenv import load_dotenv
 from .models import Message, save_message, get_similar_messages
 from .prompts import completion_prompt
 from .openaiAPI import gpt3_completion
 
+load_dotenv()
+
+
 def get_messages_list():
-	messages = Message.query.all()
-	return [message.to_dict() for message in messages]
+    messages = Message.query.all()
+    return [message.to_dict() for message in messages]
+
 
 def get_user_messages_list(user_id):
-	messages = Message.query.filter_by(speaker_id=user_id).all()
-	return [message.to_dict() for message in messages]
+    messages = Message.query.filter_by(speaker_id=user_id).all()
+    return [message.to_dict() for message in messages]
+
 
 def get_tars_reply(data):
 
@@ -30,6 +37,8 @@ def get_tars_reply(data):
             "speaker_id": 2,
             "timestamp": "Just now",
         }
+    return tars_reply
+
 
 # Get the TARS reply.
 def get_tars_response(user_message):

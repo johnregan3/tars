@@ -45,6 +45,7 @@ def create_app(config=None):
             # TODO: Don't use a list.
             data = request.get_json()
             reply = get_tars_reply(data)
+            print( reply );
             return jsonify([reply])
         if request.method == "GET":
             messages = get_messages_list()
@@ -57,7 +58,7 @@ def create_app(config=None):
             messages = get_user_messages_list(user_id)
             return jsonify(messages)
         except Exception as e:
-            print("Error getting User messages: %s" % str(e))
+            print("\033[91mError getting User messages: %s" % str(e))
             return jsonify([])
 
     return app
@@ -66,7 +67,7 @@ def create_app(config=None):
 if __name__ == "__main__":
 
     def is_docker():
-        return os.path.exists("../.dockerenv")
+        return os.path.exists("/.dockerenv")
 
     prompt_note_url = "http://localhost:5500"
     if is_docker():
@@ -74,7 +75,7 @@ if __name__ == "__main__":
 
     debug_message = """
     \033[94m***********************************************************
-    \033[94m* 👉 TARS URL is \033[4m{0}\033
+    \033[94m* 👉 TARS URL is \033[4m{0}\033[0m
     \033[94m* 👉 Ignore any URLs mentioned below. They\'re for the API.
     \033[94m***********************************************************\033[0m
     """
@@ -82,3 +83,9 @@ if __name__ == "__main__":
     maybe_debug = is_docker()
     app = create_app()
     app.run(host="0.0.0.0", port=5500, debug=maybe_debug)
+
+def print_error(error):
+	print("\033[91m%s" % str(error))
+
+def print_warning(warning):
+	print("\033[93m%s" % str(warning))

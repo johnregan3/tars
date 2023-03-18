@@ -3,6 +3,7 @@ import re
 import openai
 from time import sleep
 from dotenv import load_dotenv
+from .utils import print_error, print_warning
 
 load_dotenv()
 
@@ -14,7 +15,6 @@ code_re = re.compile(r"`([^`]+)`")
 linebreak_re = re.compile(r"(?<!<pre>)\r\n(?!</pre>)")
 
 # This is the "friendly" voice of TARS.
-# Based on code from github/daveshap.
 def gpt3_completion(
     prompt,
     engine="text-davinci-003",
@@ -57,17 +57,14 @@ def gpt3_completion(
         except Exception as oops:
             retry += 1
             if retry >= max_retries:
-                print("\033[91mGPT Completion Failed: %s \033[0m" % oops)
+                print_error("GPT Completion Failed: %s" % oops)
                 return False
-            print(
-                "\033[91mError communicating with OpenAI: %s Retrying...\033[0m" % oops
-            )
+            print_warning("Error communicating with OpenAI: %s Retrying..." % oops)
             sleep(0.5)
 
 
 # Used for generating embeddings/vectors.
-# Lifted almost directly from github/daveshap
-def gpt3_embedding(content, engine="text-embedding-ada-002"):
+def gpt3_embedding(content):
     # Fix any Unicode Errors
     content = content.encode(encoding="ASCII", errors="ignore").decode()
 
@@ -75,37 +72,36 @@ def gpt3_embedding(content, engine="text-embedding-ada-002"):
     retry = 0
     while retry < max_retries:
         try:
-            response = openai.Embedding.create(input=content, model=engine)
+            response = openai.Embedding.create(
+                input=content, model="text-embedding-ada-002"
+            )
             # This is a normal list.
             vector = response["data"][0]["embedding"]
             return vector
         except Exception as oops:
             retry += 1
             if retry >= max_retries:
-                print("\033[91mGPT Embedding Failed: %s \033[0m" % oops)
+                print_error("GPT Embedding Failed: %s" % oops)
                 return False
-            print(
-                "\033[91mError communicating with OpenAI: %s Retrying...\033[0m" % oops
-            )
+            print_warning("Error communicating with OpenAI: %s Retrying..." % oops)
             sleep(0.5)
 
 
 # Used for more technical processing.
-# Lifted almost directly from github/daveshap
-def chatgpt_completion(messages, model="gpt-3.5-turbo"):
+def chatgpt_completion(messages):
     max_retries = 5
     retry = 0
     while retry < max_retries:
         try:
-            response = openai.ChatCompletion.create(model=model, messages=messages)
+            response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo", messages=messages
+            )
             text = response["choices"][0]["message"]["content"]
             return text
         except Exception as oops:
             retry += 1
             if retry >= max_retries:
-                print("\033[91mGPT Embedding Failed: %s \033[0m" % oops)
+                print_error("GPT Embedding Failed: %s" % oops)
                 return False
-            print(
-                "\033[91mError communicating with OpenAI: %s Retrying...\033[0m" % oops
-            )
+            print_warning("Error communicating with OpenAI: %s Retrying..." % oops)
             sleep(0.5)
