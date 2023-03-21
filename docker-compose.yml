@@ -1,0 +1,7 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    ports:
+      # The first port is the 'user' port, the second is the 'container' port
+      - '4200:5500'

@@ -1,12 +1,8 @@
 # TARS
 
-GPT-3 chatbot with long term memory, as a Laravel App
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-|   |   |
-|-----------------|------------------------|
-| :exclamation:  | **Breaking changes coming in v0.2.**<br>TARS will run on Python & SQLite.<br>No Laravel, completely new local environment.<br>Expected deployment date: March 17, 2023 |
-|  |  |
-
+GPT-3 chatbot with long term memory, runs locally or in Docker.
 
 ![tars-github-2](https://user-images.githubusercontent.com/2053940/224233487-3e2e4c17-670e-4cb8-9561-929d1fa7b76e.jpg)
 
@@ -16,86 +12,93 @@ This is an attempt to recreate [Dave Shapiro](https://www.patreon.com/daveshap)'
 
 To his credit, Shaprio's project was an experiment and was never intended to scale. When I tried out his code, I wanted to play with the chatbot longer to see what it was capable of, but was shocked at how quickly the data amassed on my hard drive.  This is what inspired me to try to put all of it into a database.
 
-This app is designed to be run on your local webserver (like [Laravel valet](https://laravel.com/docs/10.x/valet)). Once you have it up and running, start chatting with TARS. It takes a bit of interaction for it to gather enough data to give good responses, but I was able to have some interesting conversations with TARS, covering topics ranging from my personal goals, fried chicken recipes, ceiling fans in cars, and what I enjoy most about the people I love.
+This app is run locally in your web browser. Once you have it up and running, start chatting with TARS. It takes a bit of interaction for it to gather enough data to give good responses, but I was able to have some interesting conversations with TARS, covering topics ranging from my personal goals, fried chicken recipes, ceiling fans in cars, and what I enjoy most about the people I love.
 
-### Terminology:
-- ***TARS*** is the name for this chatbot.  If you don't know what that is a reference to, here's a [quick video](https://www.youtube.com/watch?v=p3PfKf0ndik).
-- ***Memories*** are individual messages sent either by the user or TARS.
-- ***Summaries*** are internal notes stored by TARS for later use. These are not currently used in this iteration. (I believe Shapiro planned for periodic runs of a "dream sequence" so that the bot can go back and "think" about what has transpired.)
-- A ***Vector*** is an array of of floating point numbers.  In our context, a vector is a way of identifying what's contained in a "Memory".
-- An ***Embedding*** is nearly synonymous with "vector" in our context. Each message (whether created by the user or TARS) is sent to OpenAI to get an embedding, and that embedding is saved with the text of the message into a Memory.
-- ***Cosine similarity*** is the [mathematical formula](https://en.wikipedia.org/wiki/Cosine_similarity) for comparing two vectors to see how close (or, "similar") they are. In our case, when TARS is looking for similar previous conversations, it uses cosine similarity to locate what content is related.
+---
+## Super-Quickstart
+---
 
-## How It Works
+1. `git clone git@github.com:johnregan3/tars.git`
+2. Set up configuration in a `.env` file
+3. `bash tars-setup.sh` _(only the first time you start TARS)_
+3. `bash tars.sh`
+4. Visit `http://localhost:4200`
+5. Chat with your new best friend
 
-When the user submits a message to TARS, it is stored in a *Memory* associated with the User. Then, a prompt is prepared for TARS to send to OpenAI's API. This prompt consist of: A brief statement of who TARS is and it's goals, a summary of related Memories, and a chat log of the four most recent messages. When this prompt is returned a completion, it is stored as a Memory associated with TARS, and that reply text is presented to the user.
-
-## Observations
-
-Using a database instead of text files means TARS takes up significantly less disk space, and information is processed faster. Also, DB caching is a huge advantage.
-
-My very first iteration used a MySQL database and plain PHP to calculate cosine similarities, but it took quite a long time for TARS to provide a response to any prompt (~20 sec). I changed to using a PostgreSQL database so that the cosine similarity can be caclulated in the DB query instead of the code, and the cumulative changes reduced response times to as low as 5 seconds if Open AI's API responded quickly.
-
-## Future Development
-
-### Use of a Chat Model over a Completion Model
-In the next version I'm going to start using the `gpt-3.5-turbo` *chat* model instead of the current `text-davinci-003` *completion* model.
-
-Turbo is not only 1/10 the cost per API call, but it takes a [series of messages](https://platform.openai.com/docs/guides/chat/chat-vs-completions) all at once to get a more accurate view of what is requested, and additionally, it returns a response with more that just a completion (a simple reply): it provides data like "Anticipation" (guessing what the user needs next) and "Salience" (the important points of the conversation). This data can help TARS provide better results to the user.
-
-### Dream Sequences
-Shapiro alluded to letting the chatbot process recent interactions during downtime (like on a Cron). The purpose of this would be to gather a greater understanding of the context it "lives" in, and perhaps not have to sift so hard through data to provide a relevant and accurate response to a prompt. I want to explore this idea more deeply.
-
-### Knowledge Base
-I'd like to develop a way for TARS to create and use a knowledge base. This would be a useful reference guide for remembering names of family, important dates, etc. The challenge in this is how TARS will determine when to add information to that table, as well as when to access it.
-
-### External Sources
-I'd also like to provide TARS with a way to search the internet for answers and more recent information than is currently available to OpenAI's models. For instance, the ability for TARS to consider the upcoming weather forecast when recommending plans would be really helpful (and frankly, pretty darn cool).
-
+---
 ## Installation
+---
+*Note: Unfortunately, I cannot devote much time to providing support for setup issues because I don't want to get fired from my day job*
 
-*Note: this is what I did to install it on my Mac. I have no idea how to do it on your machine. I spent almost a full day working with ChatGPT to get the PostreSQL up and configured. Best of luck!*
-
-### Pre-Setup Notes
-- This requires using a PostgreSQL (as opposed to MySQL) database. [[setup](https://www.codementor.io/@engineerapart/getting-started-with-postgresql-on-mac-osx-are8jcopb)].
-- I used Homebrew to install PostgreSQL: `brew install postgresql`
-- Install the pgvector PostgreSQL extension: `brew install pgvector/brew/pgvector`
-- I installed Redis on my Mac M1 (16GB RAM) to help with caching.
+### Requirements
+- Python 3.0+
+  - To confirm, in your command shell run `python -V` or even `python3 -V`.
+- [Docker](https://docs.docker.com/get-docker/)
+- Your [OpenAI API Key](https://help.openai.com/en/articles/4936850-where-do-i-find-my-secret-api-key)
 
 ### Setup
-1. Clone this repo.
+1. Download these files. You have two options:
+    - Clone this repo: `git clone git@github.com:johnregan3/tars.git`
+	- Download the [zip file](https://github.com/johnregan3/tars/archive/refs/heads/trunk.zip) like a caveman.
 
-2. Run `composer install`
-
-3. Run `npm install`
-
-4. To replicate my config, update your `.env` file to include the following:
+2. Inside of your tars/ directory (wherever you put it), set up your config file.  Copy or rename `.env.example` to `.env` and update these settings:
 ```
 OPENAI_API_KEY=sk-...g
 OPENAI_ORGANIZATION=
-CHAT_USER_NAME=Cooper
-CHAT_USER_ID=1
-CHAT_TARS_NAME=TARS
-CHAT_TARS_ID=2
-
-DB_CONNECTION=pgsql
-DB_HOST=127.0.0.1
-DB_PORT=5432
-DB_DATABASE=
-DB_USERNAME=
-DB_PASSWORD=
-
-CACHE_DRIVER=redis
+USER_NAME=Cooper
+TARS_NAME=TARS
+DB_NAME=tars
 ```
+You can leave the OpenAI Organization blank if you don't know it.
+
 *Note that "Cooper" can be replaced with your name, and you can call "TARS" whatever the heck you want: HAL, Ava, Shakira, it doesn't matter.*
 
-6. `php artisan migrate:fresh --seed` sets up database and cretates users based on the `.env` file.
+3. Open up your terminal and run `bash tars-setup.sh` to fire it up and start Docker.  This only has to be done the first time you run TARS.
 
-7. `npm run build` runs Vite and builds the files
+4. Run `bash tars.sh` to start.
 
-8. `npm run dev` polls the code for updates
+5. Your site will be available at `http://localhost:4200`
 
+6. Press `Ctrl+C` to stop and exit.
+
+🚨 **Important Note:** Your chat database lives inside of your Docker container, so if you destroy — not just stop — the container, your chat history will be wiped out.
+
+---
+## Advanced Stuff
+---
+To do your own develpment or customize the app, here are some further instructions:
+
+1. Run `python -m venv ./venv` to create a virtual environment.
+
+2. Run `source venv/bin/activate` to start the Python environment.
+   1. To shut it down, simply run the command `deactivate`
+
+3. Run `pip install -r requirements.txt`
+
+4. For toying with the front end Vue files, sart by changing directories: `cd web`
+
+5. Run `npm install` to get everything ready to go.
+
+6. Run `npm run build` to compile any edits you make in this directory.
+    - You can run `npm run dev` to launch a frontend preview if you want to play with the design. It will be viewable at `http://localhost:5173/`. Note that **this is just a preview URL for Vue development**, so the database won't be connected. Python will later give you a different URL for your actual dev site with the database hooked up and whatnot.
+
+7. Run `cd ../` to go back up to the main directory.
+
+8. Run the app. You have two options:
+    - Run `python tars.py` to fire up the dev site. It will be at `http://127.0.0.1:5500`
+	- Or run `bash tars.sh` to start Docker, then visit `http://localhost:4200` to enjoy the fruits of your labor.
+
+---
+## Changelog
+---
+```
+v0.2 (March 2023) Major update. Now runs a Docker container with Python, Flask, SQLite, and Vue.
+
+v0.1 (Early March 2023) Initial Release. Uses PHP/JS with Laravel, Vue and PostgreSQL. Requires local dev server like Laravel Valet.
+```
+---
 ## Credits
+---
 
 - Architecture inspired by [Dave Shapiro's](https://www.patreon.com/daveshap) work
 - Dave Shapiro's YT video Series:
