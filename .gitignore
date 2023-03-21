@@ -13,15 +13,18 @@
 !README.md
 !requirements.txt
 !tars.sh
+!tars-setup.sh
 !*.py
 !app/
 !app/*.*.py
 !docs/
 !docs/*
-
+!tests/
+!tests/*.*.py
 !web
 !web/*.*
 !web/**/*
+**/.DS_Store
 web/.vscode
 web/node_modules
 

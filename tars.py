@@ -1,7 +1,6 @@
 import os
 from dotenv import load_dotenv
-from app.models import db
-from app.utils import get_tars_reply, get_messages_list, get_user_messages_list
+from app.db import db
 from flask_cors import CORS, cross_origin
 from flask import (
     Flask,
@@ -22,7 +21,14 @@ def create_app(config=None):
     # Configure the database.
     db_filename = os.getenv("DB_NAME", "tars") + ".db"
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///{}".format(db_filename)
+
+    # If a config object is provided, update the app config
+    if config:
+        app.config.update(config)
+
     db.init_app(app)
+
+    from app.messages import get_messages_list, get_user_messages_list, get_tars_reply
 
     # Create the database if it doesn't exist.
     with app.app_context():
@@ -45,7 +51,7 @@ def create_app(config=None):
             # TODO: Don't use a list.
             data = request.get_json()
             reply = get_tars_reply(data)
-            print( reply );
+            print(reply)
             return jsonify([reply])
         if request.method == "GET":
             messages = get_messages_list()
@@ -80,12 +86,6 @@ if __name__ == "__main__":
     \033[94m***********************************************************\033[0m
     """
     print(debug_message.format(prompt_note_url))
-    maybe_debug = is_docker()
+    maybe_debug = is_docker() == False
     app = create_app()
     app.run(host="0.0.0.0", port=5500, debug=maybe_debug)
-
-def print_error(error):
-	print("\033[91m%s" % str(error))
-
-def print_warning(warning):
-	print("\033[93m%s" % str(warning))

@@ -20,6 +20,7 @@ This app is run locally in your web browser. Once you have it up and running, st
 
 1. `git clone git@github.com:johnregan3/tars.git`
 2. Set up configuration in a `.env` file
+3. `bash tars-setup.sh` _(only the first time you start TARS)_
 3. `bash tars.sh`
 4. Visit `http://localhost:4200`
 5. Chat with your new best friend
@@ -52,11 +53,13 @@ You can leave the OpenAI Organization blank if you don't know it.
 
 *Note that "Cooper" can be replaced with your name, and you can call "TARS" whatever the heck you want: HAL, Ava, Shakira, it doesn't matter.*
 
-3. Open up your terminalun `bash tars.sh` to fire it up and start Docker.
+3. Open up your terminal and run `bash tars-setup.sh` to fire it up and start Docker.  This only has to be done the first time you run TARS.
 
-4. Your site will be available at `http://localhost:4200`
+4. Run `bash tars.sh` to start.
 
-5. Press `Ctrl+C` to stop and exit.
+5. Your site will be available at `http://localhost:4200`
+
+6. Press `Ctrl+C` to stop and exit.
 
 🚨 **Important Note:** Your chat database lives inside of your Docker container, so if you destroy — not just stop — the container, your chat history will be wiped out.
 
@@ -72,17 +75,17 @@ To do your own develpment or customize the app, here are some further instructio
 
 3. Run `pip install -r requirements.txt`
 
-3. For toying with the front end Vue files, sart by changing directories: `cd web`
+4. For toying with the front end Vue files, sart by changing directories: `cd web`
 
-4. Run `npm install` to get everything ready to go.
+5. Run `npm install` to get everything ready to go.
 
-5. Run `npm run build` to compile any edits you make in this directory.
-    - You can run `npm run dev` to launch a frontend preview if you want to play with the design. It will be viewable at `http://localhost:5173/`. Note that *this is just a preview URL for Vue development*, so the database won't be connected. Python will later give you a different URL for your actual dev site with the database hooked up and whatnot.
+6. Run `npm run build` to compile any edits you make in this directory.
+    - You can run `npm run dev` to launch a frontend preview if you want to play with the design. It will be viewable at `http://localhost:5173/`. Note that **this is just a preview URL for Vue development**, so the database won't be connected. Python will later give you a different URL for your actual dev site with the database hooked up and whatnot.
 
-6. Run `cd ../` to go back up to the main directory.
+7. Run `cd ../` to go back up to the main directory.
 
-7. Run the app. You have two options:
-    - Run `python app.py` to fire up the dev site. It will be at `http://127.0.0.1:5500`
+8. Run the app. You have two options:
+    - Run `python tars.py` to fire up the dev site. It will be at `http://127.0.0.1:5500`
 	- Or run `bash tars.sh` to start Docker, then visit `http://localhost:4200` to enjoy the fruits of your labor.
 
 ---

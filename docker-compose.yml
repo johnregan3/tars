@@ -3,4 +3,5 @@ services:
   app:
     build: .
     ports:
-      - '4200:5000'
+      # The first port is the 'user' port, the second is the 'container' port
+      - '4200:5500'

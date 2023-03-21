@@ -23,7 +23,7 @@ def gpt3_completion(
     tokens=400,
     freq_pen=0.0,
     pres_pen=0.0,
-):
+) -> str:
     max_retries = 5
     retry = 0
     prompt = prompt.encode(encoding="ASCII", errors="ignore").decode()
@@ -58,8 +58,8 @@ def gpt3_completion(
             retry += 1
             if retry >= max_retries:
                 print_error("GPT Completion Failed: %s" % oops)
-                return False
-            print_warning("Error communicating with OpenAI: %s Retrying..." % oops)
+                return ""
+            print_warning("Error communicating with GPT3: %s Retrying..." % oops)
             sleep(0.5)
 
 
@@ -103,5 +103,5 @@ def chatgpt_completion(messages):
             if retry >= max_retries:
                 print_error("GPT Embedding Failed: %s" % oops)
                 return False
-            print_warning("Error communicating with OpenAI: %s Retrying..." % oops)
+            print_warning("Error communicating with Chat: %s Retrying..." % oops)
             sleep(0.5)

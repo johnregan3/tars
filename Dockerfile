@@ -1,7 +1,7 @@
 FROM python:3.8-slim-buster
 
 # Set the working directory
-WORKDIR /app
+WORKDIR /tars
 
 COPY requirements.txt .
 

@@ -6,7 +6,7 @@ tars_name = os.getenv("TARS_NAME", "TARS")
 user_name = os.getenv("USER_NAME", "Cooper")
 
 # Basic conversational prompt.
-def completion_prompt(conversation, related):
+def completion_prompt(conversation, related) -> str:
     prompt = """I am a chatbot named {0}. My goal is to assist {1} to reach their goals. I will read the related and recent messages, and then I will provide a reponse.
 
 Here are the related messages:
