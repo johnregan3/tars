@@ -1,5 +1,6 @@
 <script setup>
 import Header from '@c/SpotHeader.vue'
+import Sidebar from '@c/SpotSidebar.vue'
 import Footer from '@c/SpotFooter.vue'
 defineProps({
   title: String
@@ -19,5 +20,6 @@ defineProps({
       </main>
       <Footer />
     </div>
+	<Sidebar />
   </div>
 </template>

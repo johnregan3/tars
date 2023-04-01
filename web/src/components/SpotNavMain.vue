@@ -26,22 +26,15 @@
     </div>
     <nav class="pointer-events-auto hidden md:block">
       <ul
-        class="flex rounded-full bg-white/90 px-3 text-sm font-medium text-zinc-800 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10"
+        class="flex rounded-full px-3 text-sm font-medium bg-zinc-800/90 text-zinc-200 shadow-lg ring-1 ring-white/10 backdrop-blur"
       >
-        <li v-if="true">
+        <li>
           <span
-            class="relative block px-3 py-2 transition hover:text-teal-500 dark:hover:text-teal-400"
+            class="relative block px-3 py-2 transition hover:text-teal-400"
+			@click="settingsOpen = true"
           >
-            You are logged in.
+            Settings
           </span>
-        </li>
-        <li v-else>
-          <a
-            href="#"
-            class="relative block px-3 py-2 transition hover:text-teal-500 dark:hover:text-teal-400"
-          >
-            Log in
-          </a>
         </li>
       </ul>
     </nav>
